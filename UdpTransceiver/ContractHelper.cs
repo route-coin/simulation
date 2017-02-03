@@ -19,6 +19,7 @@ namespace Common
         public async Task<bool> UnlockAccount(string buyerPublicKey, string buyerAccountPassword)
         {
             Trace.WriteLine($"TryToUnlockAccount,{buyerPublicKey},{DateTime.UtcNow}");
+            Console.WriteLine($"TryToUnlockAccount,{buyerPublicKey},{DateTime.UtcNow}");
 
             var ipcClient = new IpcClient(_getAddress);
             var web3 = new Web3(ipcClient);
@@ -27,6 +28,7 @@ namespace Common
             var unlockResult = await web3.Personal.UnlockAccount.SendRequestAsync(buyerPublicKey, buyerAccountPassword, _accountUnlockTime);
 
             Trace.WriteLine($"AccountUnlocked,{unlockResult},{DateTime.UtcNow}");
+            Console.WriteLine($"AccountUnlocked,{unlockResult},{DateTime.UtcNow}");
 
             return unlockResult;
         } 
@@ -62,7 +64,7 @@ namespace Common
             var destinationAddressRouteFoundFunction = contract.GetFunction("destinationAddressRouteFound");
 
             var transactionHash = await destinationAddressRouteFoundFunction.SendTransactionAsync(callerAddress);
-
+            Console.WriteLine($"RouteFound,{transactionHash},{DateTime.UtcNow}");
             Trace.WriteLine($"RouteFound,{transactionHash},{DateTime.UtcNow}");
             var keepChecking = true;
             while (keepChecking)

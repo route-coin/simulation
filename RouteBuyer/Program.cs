@@ -25,37 +25,44 @@ namespace CreateContract
             {
                 Task.Run(async () =>
                 {
-                    if (args.Length < 5)
+                    try
                     {
-                        Console.WriteLine("Some arguments missing.");
-                        Console.WriteLine("Expected arguments:");
-                        Console.WriteLine("buyerPublicKey buyerAccountPassword destinationAddress contractPrice contractGracePeriod");
-                        return;
+                        if (args.Length < 5)
+                        {
+                            Console.WriteLine("Some arguments missing.");
+                            Console.WriteLine("Expected arguments:");
+                            Console.WriteLine("buyerPublicKey buyerAccountPassword destinationAddress contractPrice contractGracePeriod");
+                            return;
+                        }
+
+                        var buyerPublicKey = args[0];
+                        var buyerAccountPassword = args[1];
+                        var destinationAddress = args[2];
+                        var gas = new Nethereum.Hex.HexTypes.HexBigInteger(300000);
+                        var balance = new Nethereum.Hex.HexTypes.HexBigInteger(BigInteger.Parse(args[3]));
+                        var contractGracePeriod = int.Parse(args[4]);
+
+                        var contractHelper = new ContractHelper();
+
+                        var unlocked = await contractHelper.UnlockAccount(buyerPublicKey, buyerAccountPassword);
+                        var contractAddress = await contractHelper.CreateContract(buyerPublicKey, gas, balance, destinationAddress, contractGracePeriod);
+
+                        if (!string.IsNullOrEmpty(contractAddress))
+                        {
+                            Trace.WriteLine($"ContractSubmitBroadcasted,{contractAddress},{DateTime.UtcNow}");
+                            // transaction added to the block.
+                            // broadcast the public key of the contract to the network.
+                            var udpTransceiver = new UdpTransceiver();
+                            udpTransceiver.Send($"ContractSubmitted@{contractAddress}");
+                        }
+                        else
+                        {
+                            Trace.WriteLine($"ContractFailedToSubmit,{DateTime.UtcNow}");
+                        }
                     }
-
-                    var buyerPublicKey = args[0];
-                    var buyerAccountPassword = args[1];
-                    var destinationAddress = args[2];
-                    var gas = new Nethereum.Hex.HexTypes.HexBigInteger(300000);
-                    var balance = new Nethereum.Hex.HexTypes.HexBigInteger(BigInteger.Parse(args[3]));
-                    var contractGracePeriod = int.Parse(args[4]);
-
-                    var contractHelper = new ContractHelper();
-
-                    var unlocked = await contractHelper.UnlockAccount(buyerPublicKey, buyerAccountPassword);
-                    var contractAddress = await contractHelper.CreateContract(buyerPublicKey, gas, balance, destinationAddress, contractGracePeriod);
-
-                    if(!string.IsNullOrEmpty(contractAddress))
+                    catch (Exception ex)
                     {
-                        Trace.WriteLine($"ContractSubmitBroadcasted,{contractAddress},{DateTime.UtcNow}");
-                        // transaction added to the block.
-                        // broadcast the public key of the contract to the network.
-                        var udpTransceiver = new UdpTransceiver();
-                        udpTransceiver.Send($"ContractSubmitted@{contractAddress}");
-                    }
-                    else
-                    {
-                        Trace.WriteLine($"ContractFailedToSubmit,{DateTime.UtcNow}");
+                        Console.WriteLine($"Error: {ex.Message},{DateTime.UtcNow}");
                     }
 
 
@@ -63,6 +70,7 @@ namespace CreateContract
             }
             catch (Exception ex) {
                 Trace.WriteLine($"Error: {ex.Message},{DateTime.UtcNow}");
+                Console.WriteLine($"Error: {ex.Message},{DateTime.UtcNow}");
             }
             finally {
                 Trace.Flush();

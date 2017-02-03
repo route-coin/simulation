@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace RouteBuyer
@@ -24,6 +25,24 @@ namespace RouteBuyer
 
             var udpTransceiver = new UdpTransceiver();
             udpTransceiver.Start(clientPublicKey, clientPassword);
+
+            ConsoleKeyInfo cki;
+            do
+            {
+                if (Console.KeyAvailable)
+                {
+                    cki = Console.ReadKey(true);
+                    switch (cki.KeyChar)
+                    {
+                        case 's':
+
+                        case 'x':
+                            udpTransceiver.Stop();
+                            return;
+                    }
+                }
+                Thread.Sleep(10);
+            } while (true);
 
         }
     }

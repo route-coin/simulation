@@ -65,26 +65,45 @@ namespace Common
 
         private async Task<string> ProcessMessage(string message)
         {
-            if (!message.Contains("@"))
+            try
             {
-                Console.WriteLine($"Invalid Message");
-                throw new ArgumentException();
+                if (!message.Contains("@"))
+                {
+                    Console.WriteLine($"Invalid Message");
+                    throw new ArgumentException();
+                }
+
+                var messageType = message.Split('@')[0];
+                var messageBody = message.Split('@')[1];
+                Console.WriteLine($"Processing command:{messageType}");
+                if (messageType == "ContractSubmitted")
+                {
+                    var result = await ProcessRouteFound(messageBody);
+                    if (string.IsNullOrEmpty(result))
+                        Console.WriteLine($"Processing {messageType} failed.");
+                    else
+                    {
+                        Console.WriteLine($"RouteFound submitted. Contract address: {result}");
+                        Send($"RouteFound@{result}");
+                    }
+                }
+                return string.Empty;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error:{ ex.Message}");
+                return string.Empty;
             }
 
-            var messageType = message.Split('@')[0];
-            var messageBody = message.Split('@')[1];
-            if (messageType == "ContractSubmitted")
-            {
-                ProcessRouteFound(messageBody);
-            }
-
-            return string.Empty;
+            
         }
 
         private async Task<string> ProcessRouteFound(string messageBody)
         {
             var contractHelper = new ContractHelper();
+            Console.WriteLine($"Unlocking account with: {_callerPublicKey}, {_callerPassword}");
             var unlocked = await contractHelper.UnlockAccount(_callerPublicKey, _callerPassword);
+            Console.WriteLine($"Account Unlocked: {unlocked}");
             return await contractHelper.RouteFound(messageBody, _callerPublicKey);
         }
 

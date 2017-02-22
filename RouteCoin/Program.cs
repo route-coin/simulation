@@ -12,7 +12,7 @@ namespace RouteCoin
         private static Node baseStationNode { get; set; }
 
         private static int ContractGracePeriod = 10;
-        private static string ContractBalance = "1";
+        private static BigInteger InitialContractBalance = 1; // 
         private static int CoverageArea = 20; // each node covers 20 meters around it
 
         private static string RouteCoinTopicName = "RouteCoinTopic";
@@ -29,7 +29,10 @@ namespace RouteCoin
             ServiceBusHelper.SubscribeToTopic(node.PublicKey);
 
             if(!node.IsBaseStation && !IsBaseStationClose())  // only create contract when it is not BS and it is not close to BS
-                CreateContract();
+            {
+                var parentContracts = new string[10];
+                CreateContract(InitialContractBalance, parentContracts);
+            }
 
             //ServiceBusHelper.ListenToMessages();
 
@@ -72,80 +75,56 @@ namespace RouteCoin
             DatabaseHelper.ReleaseNode(node);
         }
 
+        private static void CreateContract(BigInteger contractBalance, string[] parentContracts)
+        {
+            var balance = new Nethereum.Hex.HexTypes.HexBigInteger(contractBalance);
+
+            var contractHelper = new ContractHelper();
+
+            var contractAddress = contractHelper.CreateContract(node.PublicKey, node.Password, balance, baseStationNode.PublicKey, ContractGracePeriod, parentContracts);
+            //var contractAddress = "0xc21f50232BBAD3485367455dB7884f138B5d7FaF";
+
+            if (!string.IsNullOrEmpty(contractAddress))
+            {
+                var neighborNodes = DatabaseHelper.GetNeighborNodes(node, CoverageArea);
+                if (neighborNodes != null)
+                {
+                    DatabaseHelper.Log($"Found close nodes. nodes are close to this node. Neighbor nodes Count: {neighborNodes.Count}");
+                    foreach (var neighborNode in neighborNodes)
+                    {
+                        ServiceBusHelper.SendMessageToTopic(node, neighborNode, baseStationNode, contractAddress, Contract.State.ContractCreated.ToString());
+                    }
+                }
+                else
+                {
+                    DatabaseHelper.Log("No nodes are close to this node.");
+                }
+            }
+            else
+            {
+                DatabaseHelper.Log("Contract was not submitted successfully.");
+            }
+                    
+        }
+
         private static bool ProcessMessage(WhisperMessage body)
         {
             switch (body.Subject)
             {
                 case "ContractCreated":
+                    break;
 
-                
+                case "RouteFound":
+                    break;
+
+                case "RouteConfirmed":
+                    break;
+
                 default:
                     break;
             }
 
-        }
-
-        private static void CreateContract()
-        {
-            // create a contract
-            try
-            {
-                Task.Run(async () =>
-                {
-                    try
-                    {
-                        var gas = new Nethereum.Hex.HexTypes.HexBigInteger(300000);
-                        var balance = new Nethereum.Hex.HexTypes.HexBigInteger(BigInteger.Parse(ContractBalance));
-                        var contractGracePeriod = ContractGracePeriod;
-
-                        var contractHelper = new ContractHelper();
-
-                        var unlocked = await contractHelper.UnlockAccount(node.PublicKey, node.Password);
-                        //var contractAddress = await contractHelper.CreateContract(node.PublicKey, gas, balance, baseStationNode.PublicKey, contractGracePeriod);
-
-                        var contractAddress = "0xc21f50232BBAD3485367455dB7884f138B5d7FaF";
-                        
-
-                        if (!string.IsNullOrEmpty(contractAddress))
-                        {
-                            // transaction added to the block.
-                            // broadcast the public key of the contract to the network.
-                            // send messegaes to service bus
-                            var neighborNodes = DatabaseHelper.GetNeighborNodes(node, CoverageArea);
-                            if (neighborNodes != null)
-                            {
-                                DatabaseHelper.Log($"Found close nodes. nodes are close to this node. Neighbor nodes Count: {neighborNodes.Count}");
-                                foreach (var neighborNode in neighborNodes)
-                                {
-                                     ServiceBusHelper.SendMessageToTopic(node, neighborNode, baseStationNode, contractAddress, Contract.State.ContractCreated.ToString());
-                                }
-                            }
-                            else
-                            {
-                                DatabaseHelper.Log("No nodes are close to this node.");
-                            }
-                        }
-                        else
-                        {
-                            DatabaseHelper.Log("Contract was not submitted successfully.");
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        DatabaseHelper.Log($"Error: {ex.Message}");
-                    }
-
-
-                }).GetAwaiter().GetResult();
-            }
-            catch (Exception ex)
-            {
-                DatabaseHelper.Log($"Error: {ex.Message}");
-            }
-            finally
-            {
-
-            }
+            return true;
 
         }
 

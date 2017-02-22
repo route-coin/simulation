@@ -41,35 +41,34 @@ namespace RouteCoin
             }
         }
 
-        //public static void ListenToMessages()
-        //{
-        //    var connectionString = ConfigurationManager.AppSettings["Microsoft.ServiceBus.ConnectionString"];
+        public static void ListenToMessages()
+        {
+            var connectionString = ConfigurationManager.AppSettings["Microsoft.ServiceBus.ConnectionString"];
 
-        //    var Client = SubscriptionClient.CreateFromConnectionString(connectionString, RouteCoinTopicName, RouteCoinSubscriptionName);
+            var Client = SubscriptionClient.CreateFromConnectionString(connectionString, RouteCoinTopicName, RouteCoinSubscriptionName);
 
-        //    // Configure the callback options.
-        //    OnMessageOptions options = new OnMessageOptions();
-        //    options.AutoComplete = false;
-        //    options.AutoRenewTimeout = TimeSpan.FromMinutes(1);
-
-        //    Client.OnMessage((message) =>
-        //    {
-        //        try
-        //        {
-        //            var body = message.GetBody<WhisperMessage>();
-        //            // Process message from subscription.
-        //            Console.WriteLine("\n**High Messages**");
-        //            Console.WriteLine("Body: " + body.Subject);
-        //            // Remove message from subscription.
-        //            message.Complete();
-        //        }
-        //        catch (Exception)
-        //        {
-        //            // Indicates a problem, unlock message in subscription.
-        //            message.Abandon();
-        //        }
-        //    }, options);
-        //}
+            // Configure the callback options.
+            OnMessageOptions options = new OnMessageOptions();
+            options.AutoComplete = false;
+            options.AutoRenewTimeout = TimeSpan.FromMinutes(1);
+            Client.OnMessage((message) =>
+            {
+                try
+                {
+                    var body = message.GetBody<WhisperMessage>();
+                    // Process message from subscription.
+                    Console.WriteLine("\n**High Messages**");
+                    Console.WriteLine("Body: " + body.Subject);
+                    // Remove message from subscription.
+                    message.Complete();
+                }
+                catch (Exception)
+                {
+                    // Indicates a problem, unlock message in subscription.
+                    message.Abandon();
+                }
+            }, options);
+        }
 
         public static void SendMessageToTopic(Node fromNode, Node toNode, Node baseStationNode, string contractAddress, string subject)
         {

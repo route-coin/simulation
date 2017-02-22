@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using System.Diagnostics;
 using Nethereum.Hex.HexTypes;
 
-namespace Common
+namespace RouteCoin
 {
     public class ContractHelper
     {
@@ -18,8 +18,7 @@ namespace Common
 
         public async Task<bool> UnlockAccount(string buyerPublicKey, string buyerAccountPassword)
         {
-            Trace.WriteLine($"TryToUnlockAccount,{buyerPublicKey},{DateTime.UtcNow}");
-            Console.WriteLine($"TryToUnlockAccount,{buyerPublicKey},{DateTime.UtcNow}");
+            DatabaseHelper.Log($"TryToUnlockAccount,{buyerPublicKey}");
 
             var ipcClient = new IpcClient(_getAddress);
             var web3 = new Web3(ipcClient);
@@ -27,30 +26,37 @@ namespace Common
             // Unlock the caller's account with the given password
             var unlockResult = await web3.Personal.UnlockAccount.SendRequestAsync(buyerPublicKey, buyerAccountPassword, _accountUnlockTime);
 
-            Trace.WriteLine($"AccountUnlocked,{unlockResult},{DateTime.UtcNow}");
-            Console.WriteLine($"AccountUnlocked,{unlockResult},{DateTime.UtcNow}");
+            DatabaseHelper.Log($"AccountUnlocked,{unlockResult}");
 
             return unlockResult;
         } 
 
-        public async Task<string> CreateContract(string buyerPublicKey, HexBigInteger gas, HexBigInteger balance, string destinationAddress, int contractGracePeriod)
+        public async Task<string> CreateContract(string nodePublicKey, string nodePassword, HexBigInteger gas, HexBigInteger balance, string destinationAddress, int contractGracePeriod)
         {
+
+            await UnlockAccount(nodePublicKey, nodePassword);
+
             var ipcClient = new IpcClient(_getAddress);
             var web3 = new Web3(ipcClient);
 
-            var transactionHash = await web3.Eth.DeployContract.SendRequestAsync(_abi, _byteCode, buyerPublicKey, gas, balance, destinationAddress, contractGracePeriod);
-            Trace.WriteLine($"ContractCreated,{transactionHash},{DateTime.UtcNow}");
+            var transactionHash = await web3.Eth.DeployContract.SendRequestAsync(_abi, _byteCode, nodePublicKey, gas, balance, destinationAddress, contractGracePeriod);
+            DatabaseHelper.Log($"ContractCreated,{transactionHash}");
             var keepChecking = true;
+            var maxRetry = 20;
+            var retry = 0;
             while (keepChecking)
             {
                 var reciept = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
                 if (reciept != null)
                 {
-                    Trace.WriteLine($"ContractSubmitted,{reciept.ContractAddress},{DateTime.UtcNow}");
+                    DatabaseHelper.Log($"ContractSubmitted,{reciept.ContractAddress}", $"ContractCreated:{reciept.ContractAddress}");
                     return reciept.ContractAddress;
                 }
                 // Transacion not submitted. wait 3 seconds and check again
                 System.Threading.Thread.Sleep(3000);
+                retry++;
+                if (retry > maxRetry)
+                    keepChecking = false;
             }
             return string.Empty;
         }

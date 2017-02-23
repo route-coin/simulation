@@ -1,35 +1,43 @@
-pragma solidity ^0.4.0;
+pragma solidity ^0.4.8;
 
 contract RouteCoin {
 
 	// Array of parent contracts that this contract was generated based on.
-	//address[10] public parentContracts;
-    string public parentContracts;
+    uint8 arraylength = 10;
+	address[10] parentContracts;
 
     // The public key of the buyer. Reza: we need to hash this.
-    address private buyer;   
+    address buyer;   
 
-    address private seller;
+    address seller;
 
     // Q: is this a Wallet address? an IP address? 
     // The destination of RREQ
-    address private finalDestination;  
+    address finalDestination;  
 
     // The deadline when the contract will end automatically
-    uint private contractStartTime;
+    uint contractStartTime;
 
     // The duration of the contract will end automatically
-    uint private contractGracePeriod;
+    uint contractGracePeriod;
 
     enum State { Created, Expired, Completed, Aborted, RouteFound }
-    State public state;
+    State state;
 
-    function RouteCoin(address _finalDestination, uint _contractGracePeriod, string _parentContracts) {
+    function RouteCoin(address _finalDestination, uint _contractGracePeriod, address[10] _parentContracts) 
+        payable
+    {
         buyer = msg.sender;
         contractStartTime = now;        
         finalDestination = _finalDestination;
         contractGracePeriod = _contractGracePeriod;
-        parentContracts = _parentContracts;
+        uint8 x = 0;
+        while(x < arraylength)
+        {
+        	parentContracts[x] = _parentContracts[x]; // initialize array to all zeros
+        	x++;
+        }
+
     }
 
     modifier require(bool _condition) {
@@ -59,7 +67,7 @@ contract RouteCoin {
 
     function destinationAddressRouteFound()
         //expired // contract must be in the Created state to be able to foundDestinationAddress
-        inState(State.Created)
+        //inState(State.Created)
         returns (State)
     {
         seller = msg.sender;
@@ -68,11 +76,10 @@ contract RouteCoin {
         return state;
     }
 
-
     function destinationAddressRouteConfirmed()
         //onlyBuyer  // only buyer can confirm the working route 
-        inState(State.RouteFound)  // contract must be in the Created state to be able to confirmPurchase
-        //payable
+        //inState(State.RouteFound)  // contract must be in the Created state to be able to confirmPurchase
+        payable
         returns (State)
     {
         routeAccepted();
@@ -98,11 +105,18 @@ contract RouteCoin {
         return state;
     }
 
-	function getBalance()
-		returns (uint)
-    {
-        return this.balance;
-    }
+	 function getBalance()
+	 	returns (uint)
+     {
+         return this.balance;
+     }
+
+	 function getParentContracts()
+	 	constant returns (address[10])
+     {
+         return parentContracts;
+     }
+
 
     // Events
     event aborted();

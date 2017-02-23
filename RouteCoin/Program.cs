@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using System.Numerics;
 using System.Configuration;
 using Microsoft.ServiceBus.Messaging;
+using System.Collections.Generic;
 
 namespace RouteCoin
 {
@@ -12,7 +13,7 @@ namespace RouteCoin
         private static Node baseStationNode { get; set; }
 
         private static int ContractGracePeriod = 10;
-        private static BigInteger InitialContractBalance = 1; // 
+        private static BigInteger InitialContractBalance = 60000; // 
         private static int CoverageArea = 20; // each node covers 20 meters around it
 
         private static string RouteCoinTopicName = "RouteCoinTopic";
@@ -30,8 +31,8 @@ namespace RouteCoin
 
             if(!node.IsBaseStation && !IsBaseStationClose())  // only create contract when it is not BS and it is not close to BS
             {
-                //var parentContracts = new string[10] { "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000" };
-                CreateContract(InitialContractBalance, string.Empty);
+                var parentContracts = new string[10] { "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000" };
+                CreateContract(InitialContractBalance, parentContracts);
             }
 
             //ServiceBusHelper.ListenToMessages();
@@ -75,7 +76,7 @@ namespace RouteCoin
             DatabaseHelper.ReleaseNode(node);
         }
 
-        private static void CreateContract(BigInteger contractBalance, string parentContracts)
+        private static void CreateContract(BigInteger contractBalance, string[] parentContracts)
         {
             var balance = new Nethereum.Hex.HexTypes.HexBigInteger(contractBalance);
 
@@ -112,9 +113,14 @@ namespace RouteCoin
             switch (body.Subject)
             {
                 case "ContractCreated":
+                    // if node is close to BS, then can confirm
+                    // todo: add code to confirm
+                    //else if not close to BS
                     var contractHelper = new ContractHelper();
-                    var balance = contractHelper.GetBalance(body.ContractAddress, node.PublicKey);
-                    var parents = contractHelper.GetParentContracts(body.ContractAddress, node.PublicKey);
+                    var balance = contractHelper.GetBalance(node.PublicKey, node.Password, body.ContractAddress);
+                    var parents = contractHelper.GetParentContracts(node.PublicKey, node.Password, body.ContractAddress);
+                    AddCurrentContractToParents(parents, body.ContractAddress);
+                    CreateContract(balance / 2, parents.ToArray());
                     break;
 
                 case "RouteFound":
@@ -129,6 +135,18 @@ namespace RouteCoin
 
             return true;
 
+        }
+
+        private static void AddCurrentContractToParents(List<string> parents, string contractAddress)
+        {
+            for (int i = 0; i < parents.Count; i++)
+            {
+                if (parents[i] == "0x0000000000000000000000000000000000000000")
+                {
+                    parents[i] = contractAddress;
+                    break;
+                }
+            }
         }
 
         private static bool IsBaseStationClose()

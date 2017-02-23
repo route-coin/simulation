@@ -29,9 +29,9 @@ contract RouteCoin {
         finalDestination = _finalDestination;
         contractGracePeriod = _contractGracePeriod;
 
-        for (uint i = 0; i < 10; i++) {
-            parentContracts[i] = _parentContracts[i];
-        }
+        //for (uint i = 0; i < 10; i++) {
+            parentContracts = _parentContracts;
+        //}
     }
 
     modifier require(bool _condition) {

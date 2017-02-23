@@ -30,7 +30,7 @@ namespace RouteCoin
 
             if(!node.IsBaseStation && !IsBaseStationClose())  // only create contract when it is not BS and it is not close to BS
             {
-                var parentContracts = new string[10];
+                var parentContracts = new string[10] { "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000" };
                 CreateContract(InitialContractBalance, parentContracts);
             }
 
@@ -112,6 +112,9 @@ namespace RouteCoin
             switch (body.Subject)
             {
                 case "ContractCreated":
+                    var contractHelper = new ContractHelper();
+                    var balance = contractHelper.GetBalance(body.ContractAddress, node.PublicKey);
+                    var parents = contractHelper.GetParentContracts(body.ContractAddress, node.PublicKey);
                     break;
 
                 case "RouteFound":

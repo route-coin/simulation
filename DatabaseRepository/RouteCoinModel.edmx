@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="RouteCoinModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+      <Schema Namespace="RouteCoinModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="Logs">
           <Key>
             <PropertyRef Name="Id" />
@@ -46,10 +46,34 @@
           <EntitySet Name="Node" EntityType="Self.Node" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Whisper" EntityType="Self.Whisper" Schema="dbo" store:Type="Tables" />
         </EntityContainer>
-      </Schema></edmx:StorageModels>
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="RouteCoinModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Log">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="NodePublicKey" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Message" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Event" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+        </EntityType>
+        <EntityType Name="Node">
+          <Key>
+            <PropertyRef Name="NodeId" />
+          </Key>
+          <Property Name="NodeId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="PublicKey" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="Password" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="IsRunning" Type="Boolean" Nullable="false" />
+          <Property Name="PositionX" Type="Int32" Nullable="false" />
+          <Property Name="PositionY" Type="Int32" Nullable="false" />
+          <Property Name="IsBaseStation" Type="Boolean" Nullable="false" />
+          <Property Name="IsActive" Type="Boolean" />
+        </EntityType>
         <EntityType Name="Whisper">
           <Key>
             <PropertyRef Name="Id" />
@@ -64,39 +88,41 @@
           <Property Name="Notes" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityContainer Name="RouteCoinEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Logs" EntityType="Self.Log" />
+          <EntitySet Name="Nodes" EntityType="Self.Node" />
           <EntitySet Name="Whispers" EntityType="Self.Whisper" />
-          <EntitySet Name="Nodes" EntityType="RouteCoinModel.Node" />
-          <EntitySet Name="Logs" EntityType="RouteCoinModel.Log" />
         </EntityContainer>
-        <EntityType Name="Node">
-          <Key>
-            <PropertyRef Name="NodeId" />
-          </Key>
-          <Property Name="NodeId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="PublicKey" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="true" />
-          <Property Name="Password" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="true" />
-          <Property Name="IsRunning" Type="Boolean" Nullable="false" />
-          <Property Name="PositionX" Type="Int32" Nullable="false" />
-          <Property Name="PositionY" Type="Int32" Nullable="false" />
-          <Property Name="IsBaseStation" Type="Boolean" Nullable="false" />
-          <Property Name="IsActive" Type="Boolean" />
-        </EntityType>
-        <EntityType Name="Log">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="NodePublicKey" Type="String" Nullable="false" MaxLength="500" FixedLength="false" Unicode="true" />
-          <Property Name="Message" Type="String" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
-          <Property Name="Event" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
-          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
-        </EntityType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="RouteCoinModelStoreContainer" CdmEntityContainer="RouteCoinEntities">
+          <EntitySetMapping Name="Logs">
+            <EntityTypeMapping TypeName="RouteCoinModel.Log">
+              <MappingFragment StoreEntitySet="Logs">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="NodePublicKey" ColumnName="NodePublicKey" />
+                <ScalarProperty Name="Message" ColumnName="Message" />
+                <ScalarProperty Name="Event" ColumnName="Event" />
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Nodes">
+            <EntityTypeMapping TypeName="RouteCoinModel.Node">
+              <MappingFragment StoreEntitySet="Node">
+                <ScalarProperty Name="NodeId" ColumnName="NodeId" />
+                <ScalarProperty Name="PublicKey" ColumnName="PublicKey" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="IsRunning" ColumnName="IsRunning" />
+                <ScalarProperty Name="PositionX" ColumnName="PositionX" />
+                <ScalarProperty Name="PositionY" ColumnName="PositionY" />
+                <ScalarProperty Name="IsBaseStation" ColumnName="IsBaseStation" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Whispers">
             <EntityTypeMapping TypeName="RouteCoinModel.Whisper">
               <MappingFragment StoreEntitySet="Whisper">
@@ -108,31 +134,6 @@
                 <ScalarProperty Name="MessageRead" ColumnName="MessageRead" />
                 <ScalarProperty Name="ReadDate" ColumnName="ReadDate" />
                 <ScalarProperty Name="Notes" ColumnName="Notes" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Nodes">
-            <EntityTypeMapping TypeName="RouteCoinModel.Node">
-              <MappingFragment StoreEntitySet="Node">
-                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
-                <ScalarProperty Name="IsBaseStation" ColumnName="IsBaseStation" />
-                <ScalarProperty Name="PositionY" ColumnName="PositionY" />
-                <ScalarProperty Name="PositionX" ColumnName="PositionX" />
-                <ScalarProperty Name="IsRunning" ColumnName="IsRunning" />
-                <ScalarProperty Name="Password" ColumnName="Password" />
-                <ScalarProperty Name="PublicKey" ColumnName="PublicKey" />
-                <ScalarProperty Name="NodeId" ColumnName="NodeId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Logs">
-            <EntityTypeMapping TypeName="RouteCoinModel.Log">
-              <MappingFragment StoreEntitySet="Logs">
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="Event" ColumnName="Event" />
-                <ScalarProperty Name="Message" ColumnName="Message" />
-                <ScalarProperty Name="NodePublicKey" ColumnName="NodePublicKey" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

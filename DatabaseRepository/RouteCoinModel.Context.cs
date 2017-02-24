@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace RouteCoin
+namespace DatabaseRepository
 {
     using System;
     using System.Data.Entity;
@@ -25,8 +25,8 @@ namespace RouteCoin
             throw new UnintentionalCodeFirstException();
         }
     
-        public virtual DbSet<Whisper> Whispers { get; set; }
-        public virtual DbSet<Node> Nodes { get; set; }
         public virtual DbSet<Log> Logs { get; set; }
+        public virtual DbSet<Node> Nodes { get; set; }
+        public virtual DbSet<Whisper> Whispers { get; set; }
     }
 }

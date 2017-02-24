@@ -2,8 +2,9 @@
 using Microsoft.ServiceBus.Messaging;
 using System.Configuration;
 using System;
+using DatabaseRepository;
 
-namespace RouteCoin
+namespace ServiceBusRepository
 {
     public class ServiceBusHelper
     {

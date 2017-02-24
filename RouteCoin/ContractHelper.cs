@@ -6,6 +6,7 @@ using System.Diagnostics;
 using Nethereum.Hex.HexTypes;
 using System.Numerics;
 using System.Collections.Generic;
+using DatabaseRepository;
 
 namespace RouteCoin
 {

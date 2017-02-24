@@ -7,20 +7,17 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace RouteCoin
+namespace DatabaseRepository
 {
     using System;
     using System.Collections.Generic;
     
-    public partial class Whisper
+    public partial class Log
     {
         public long Id { get; set; }
-        public string FromNode { get; set; }
-        public string ToNode { get; set; }
-        public string ContractAddress { get; set; }
-        public Nullable<System.DateTime> CreatedDate { get; set; }
-        public Nullable<bool> MessageRead { get; set; }
-        public Nullable<System.DateTime> ReadDate { get; set; }
-        public string Notes { get; set; }
+        public string NodePublicKey { get; set; }
+        public string Message { get; set; }
+        public string Event { get; set; }
+        public System.DateTime CreatedDate { get; set; }
     }
 }

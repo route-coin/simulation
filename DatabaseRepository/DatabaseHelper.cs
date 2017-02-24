@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace RouteCoin
+namespace DatabaseRepository
 {
     public class DatabaseHelper
     {
@@ -68,7 +68,7 @@ namespace RouteCoin
                 Event = eventName,
                 CreatedDate = DateTime.UtcNow,
                 Message = message,
-                NodePublicKey = Program.node?.PublicKey ?? "not set"
+                NodePublicKey = "not set" // Program.node?.PublicKey ?? 
             });
             dbContext.SaveChanges();
         }

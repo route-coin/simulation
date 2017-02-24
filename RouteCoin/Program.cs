@@ -4,6 +4,8 @@ using System.Numerics;
 using System.Configuration;
 using Microsoft.ServiceBus.Messaging;
 using System.Collections.Generic;
+using DatabaseRepository;
+using ServiceBusRepository;
 
 namespace RouteCoin
 {

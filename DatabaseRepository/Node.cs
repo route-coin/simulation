@@ -7,17 +7,20 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace RouteCoin
+namespace DatabaseRepository
 {
     using System;
     using System.Collections.Generic;
     
-    public partial class Log
+    public partial class Node
     {
-        public long Id { get; set; }
-        public string NodePublicKey { get; set; }
-        public string Message { get; set; }
-        public string Event { get; set; }
-        public System.DateTime CreatedDate { get; set; }
+        public int NodeId { get; set; }
+        public string PublicKey { get; set; }
+        public string Password { get; set; }
+        public bool IsRunning { get; set; }
+        public int PositionX { get; set; }
+        public int PositionY { get; set; }
+        public bool IsBaseStation { get; set; }
+        public Nullable<bool> IsActive { get; set; }
     }
 }

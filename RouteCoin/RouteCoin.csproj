@@ -114,63 +114,27 @@
   <ItemGroup>
     <Compile Include="ContractHelper.cs" />
     <Compile Include="ContractStates.cs" />
-    <Compile Include="DatabaseHelper.cs" />
-    <Compile Include="Log.cs">
-      <DependentUpon>RouteCoinModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Node.cs">
-      <DependentUpon>RouteCoinModel.tt</DependentUpon>
-    </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RouteCoinModel.Context.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>RouteCoinModel.Context.tt</DependentUpon>
-    </Compile>
-    <Compile Include="RouteCoinModel.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>RouteCoinModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="RouteCoinModel.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>RouteCoinModel.edmx</DependentUpon>
-    </Compile>
-    <Compile Include="ServiceBusHelper.cs" />
-    <Compile Include="Whisper.cs">
-      <DependentUpon>RouteCoinModel.tt</DependentUpon>
-    </Compile>
-    <Compile Include="WhisperMessage.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
-    <EntityDeploy Include="RouteCoinModel.edmx">
-      <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>RouteCoinModel.Designer.cs</LastGenOutput>
-    </EntityDeploy>
-    <None Include="RouteCoinModel.edmx.diagram">
-      <DependentUpon>RouteCoinModel.edmx</DependentUpon>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="RouteCoinModel.Context.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>RouteCoinModel.edmx</DependentUpon>
-      <LastGenOutput>RouteCoinModel.Context.cs</LastGenOutput>
-    </Content>
-    <Content Include="RouteCoinModel.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <DependentUpon>RouteCoinModel.edmx</DependentUpon>
-      <LastGenOutput>RouteCoinModel.cs</LastGenOutput>
-    </Content>
+    <ProjectReference Include="..\DatabaseRepository\DatabaseRepository.csproj">
+      <Project>{0f1ff864-dc9b-456f-b8ff-ab4fe4bc93cc}</Project>
+      <Name>DatabaseRepository</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ServiceBusRepository\ServiceBusRepository.csproj">
+      <Project>{7b08a382-9054-4091-8c33-e297ccfc0944}</Project>
+      <Name>ServiceBusRepository</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

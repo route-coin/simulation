@@ -8,7 +8,7 @@ using System.Numerics;
 using System.Collections.Generic;
 using DatabaseRepository;
 
-namespace RouteCoin
+namespace EthereumRepository
 {
     public class ContractHelper
     {
@@ -42,6 +42,7 @@ namespace RouteCoin
             {
                 try
                 {
+
                     await UnlockAccount(nodePublicKey, nodePassword);
 
                     var ipcClient = new IpcClient(_getAddress);
@@ -51,7 +52,7 @@ namespace RouteCoin
                     var transactionHash = await web3.Eth.DeployContract.SendRequestAsync(_abi, _byteCode, nodePublicKey, new HexBigInteger(900000), balance, new object[] { destinationAddress, contractGracePeriod, parentContracts });
                     DatabaseHelper.Log($"ContractCreated,{transactionHash}");
                     var keepChecking = true;
-                    var maxRetry = 20;
+                    var maxRetry = 30;
                     var retry = 0;
                     while (keepChecking)
                     {
@@ -96,7 +97,7 @@ namespace RouteCoin
                 var transactionHash = await destinationAddressRouteFoundFunction.SendTransactionAsync(callerAddress);
                 DatabaseHelper.Log($"RouteFound,{transactionHash},{DateTime.UtcNow}");
                 var keepChecking = true;
-                var maxRetry = 20;
+                var maxRetry = 30;
                 var retry = 0;
                 while (keepChecking)
                 {
@@ -133,7 +134,7 @@ namespace RouteCoin
 
                 DatabaseHelper.Log($"RouteConfirmed,{transactionHash},{DateTime.UtcNow}");
                 var keepChecking = true;
-                var maxRetry = 20;
+                var maxRetry = 30;
                 var retry = 0;
                 while (keepChecking)
                 {

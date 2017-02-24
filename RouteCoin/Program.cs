@@ -9,6 +9,7 @@ using ServiceBusRepository;
 using Nethereum.Hex.HexTypes;
 using System.Linq;
 using System.IO;
+using EthereumRepository;
 
 namespace RouteCoin
 {

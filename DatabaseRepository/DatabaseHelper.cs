@@ -34,6 +34,12 @@ namespace DatabaseRepository
             
         }
 
+        public static List<Node> GetActiveNodes()
+        {
+            var dbContext = new RouteCoinEntities();
+            return dbContext.Nodes.Where(m => m.IsActive == true).ToList();
+        }
+
         public static void ReleaseNode(Node node)
         {
             var dbContext = new RouteCoinEntities();

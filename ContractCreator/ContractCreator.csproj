@@ -66,6 +66,16 @@
     <None Include="App.config" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DatabaseRepository\DatabaseRepository.csproj">
+      <Project>{0F1FF864-DC9B-456F-B8FF-AB4FE4BC93CC}</Project>
+      <Name>DatabaseRepository</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ServiceBusRepository\ServiceBusRepository.csproj">
+      <Project>{7B08A382-9054-4091-8C33-E297CCFC0944}</Project>
+      <Name>ServiceBusRepository</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

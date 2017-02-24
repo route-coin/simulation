@@ -4,13 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RouteCoin
+namespace ServiceBusRepository
 {
     public class Contract
     {
-        public enum State
-        {
-            ContractCreated
-        }
     }
 }

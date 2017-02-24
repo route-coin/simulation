@@ -34,6 +34,12 @@ namespace DatabaseRepository
             
         }
 
+        public static Node GetNodeByPublicKey(string publicKey)
+        {
+            var dbContext = new RouteCoinEntities();
+            return dbContext.Nodes.FirstOrDefault(m => m.PublicKey == publicKey);
+        }
+
         public static List<Node> GetActiveNodes()
         {
             var dbContext = new RouteCoinEntities();

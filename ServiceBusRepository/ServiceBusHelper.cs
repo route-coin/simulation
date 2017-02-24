@@ -75,7 +75,7 @@ namespace ServiceBusRepository
             }, options);
         }
 
-        public static void SendMessageToTopic(Node fromNode, Node toNode, Node baseStationNode, string contractAddress, string subject)
+        public static void SendMessageToTopic(Node fromNode, Node toNode, Node baseStationNode, string contractAddress, WhisperMessage.State subject)
         {
             TopicClient Client = TopicClient.CreateFromConnectionString(ConnectionString, RouteCoinTopicName);
 
@@ -83,7 +83,7 @@ namespace ServiceBusRepository
             {
                 BaseStationAddress = baseStationNode.PublicKey,
                 ContractAddress = contractAddress,
-                FromAddress = fromNode.PublicKey,
+                FromAddress = fromNode?.PublicKey,
                 ToAddress = toNode.PublicKey,
                 Subject = subject
             };

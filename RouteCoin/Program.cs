@@ -95,7 +95,7 @@ namespace RouteCoin
                     DatabaseHelper.Log($"Found close nodes. nodes are close to this node. Neighbor nodes Count: {neighborNodes.Count}");
                     foreach (var neighborNode in neighborNodes)
                     {
-                        ServiceBusHelper.SendMessageToTopic(node, neighborNode, baseStationNode, contractAddress, Contract.State.ContractCreated.ToString());
+                        ServiceBusHelper.SendMessageToTopic(node, neighborNode, baseStationNode, contractAddress, WhisperMessage.State.ContractCreated);
                     }
                 }
                 else
@@ -114,7 +114,10 @@ namespace RouteCoin
         {
             switch (body.Subject)
             {
-                case "ContractCreated":
+                case WhisperMessage.State.CreateContract:
+                    break;
+
+                case WhisperMessage.State.ContractCreated:
                     // if node is close to BS, then can confirm
                     // todo: add code to confirm
                     //else if not close to BS
@@ -125,11 +128,11 @@ namespace RouteCoin
                     CreateContract(balance / 2, parents.ToArray());
                     break;
 
-                case "RouteFound":
-                    break;
+                //case "RouteFound":
+                //    break;
 
-                case "RouteConfirmed":
-                    break;
+                //case "RouteConfirmed":
+                //    break;
 
                 default:
                     break;

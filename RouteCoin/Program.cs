@@ -82,10 +82,17 @@ namespace RouteCoin
             switch (body.Subject)
             {
                 case WhisperMessage.State.CreateContract:
-                    // initial contract, so all parent contract addresses will be 0x
-                    var parentContracts = new string[10] { "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000" };
-                    contractAddress = contractHelper.CreateContract(node.PublicKey, node.Password, balance, baseStationNode.PublicKey, ContractGracePeriod, parentContracts);
-                    SendContractCreatedMessageToNeighborNodes(contractAddress);
+                    if (!IsBaseStationClose())
+                    {
+                        // initial contract, so all parent contract addresses will be 0x
+                        var parentContracts = new string[10] { "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000", "0x0000000000000000000000000000000000000000" };
+                        contractAddress = contractHelper.CreateContract(node.PublicKey, node.Password, balance, baseStationNode.PublicKey, ContractGracePeriod, parentContracts);
+                        SendContractCreatedMessageToNeighborNodes(contractAddress, string.Empty);
+                    }
+                    else
+                    {
+                        DatabaseHelper.Log($"Base Station is close to this node. No need to create a contract. Node: { node.PublicKey }");
+                    }
                     break;
 
                 case WhisperMessage.State.ContractCreated:
@@ -99,12 +106,9 @@ namespace RouteCoin
                         if (!AlreadyInvolvedInThisContractChain(body.ContractAddress, parents))
                         {
                             AddCurrentContractToParents(parents, body.ContractAddress);
-
-                            // todo: devide parentContractBalance by 2
-                            // todo: dont send to the sender node?
-                            contractAddress = contractHelper.CreateContract(node.PublicKey, node.Password, new HexBigInteger(parentContractBalance), baseStationNode.PublicKey, ContractGracePeriod, parents.ToArray());
+                            contractAddress = contractHelper.CreateContract(node.PublicKey, node.Password, new HexBigInteger(parentContractBalance/2), baseStationNode.PublicKey, ContractGracePeriod, parents.ToArray());
                             SaveContractLocally(contractAddress);
-                            SendContractCreatedMessageToNeighborNodes(contractAddress);
+                            SendContractCreatedMessageToNeighborNodes(contractAddress, body.FromAddress);
                         }
                         else
                         {
@@ -182,7 +186,7 @@ namespace RouteCoin
             }
         }
 
-        private static void SendContractCreatedMessageToNeighborNodes(string contractAddress)
+        private static void SendContractCreatedMessageToNeighborNodes(string contractAddress, string excludeNeighborAddress)
         {
             if (string.IsNullOrEmpty(contractAddress))
             {
@@ -196,7 +200,10 @@ namespace RouteCoin
                 DatabaseHelper.Log($"Found close nodes. nodes are close to this node. Neighbor nodes Count: {neighborNodes.Count}");
                 foreach (var neighborNode in neighborNodes)
                 {
-                    ServiceBusHelper.SendMessageToTopic(node, neighborNode, baseStationNode, contractAddress, WhisperMessage.State.ContractCreated);
+                    if(string.IsNullOrEmpty(excludeNeighborAddress) || neighborNode.PublicKey != excludeNeighborAddress)
+                    { 
+                        ServiceBusHelper.SendMessageToTopic(node, neighborNode, baseStationNode, contractAddress, WhisperMessage.State.ContractCreated);
+                    }
                 }
             }
             else

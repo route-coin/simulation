@@ -31,7 +31,7 @@ namespace RouteCoin
 
             if (node == null)
             {
-                Console.Write("No free node to be dedicated. all nodes are running");
+                DatabaseHelper.Log("No free node to be dedicated. all nodes are running");
                 Console.Write("Press any key to exit");
                 Console.Read();
                 return;
@@ -52,7 +52,6 @@ namespace RouteCoin
             {
                 try
                 {
-                    Console.WriteLine("Recieved Message...");
                     if (ProcessMessage(message))
                         message.Complete();
                     else
@@ -78,7 +77,7 @@ namespace RouteCoin
             var balance = new HexBigInteger(10000);
             var contractAddress = string.Empty;
 
-            Console.WriteLine($"Processing Message: { body.Subject }");
+            DatabaseHelper.Log($"Processing Recieved Message: { body.Subject }");
 
             switch (body.Subject)
             {
@@ -90,25 +89,39 @@ namespace RouteCoin
                     break;
 
                 case WhisperMessage.State.ContractCreated:
-                    // TODO: if node is close to BS, then can confirm
-                    // todo: add code to confirm
-                    //else if not close to BS
-                    var parentContractBalance = contractHelper.GetBalance(node.PublicKey, node.Password, body.ContractAddress);
-                    var parents = contractHelper.GetParentContracts(node.PublicKey, node.Password, body.ContractAddress);
-                    if (!AlreadyInvolvedInThisContractChain(body.ContractAddress, parents))
-                    {
-                        AddCurrentContractToParents(parents, body.ContractAddress);
 
-                        // todo: devide parentContractBalance by 2
-                        // todo: dont send to the sender node?
-                        contractAddress = contractHelper.CreateContract(node.PublicKey, node.Password, new HexBigInteger(parentContractBalance), baseStationNode.PublicKey, ContractGracePeriod, parents.ToArray());
-                        SaveContractLocally(contractAddress);
-                        SendContractCreatedMessageToNeighborNodes(contractAddress);
+                    var parents = contractHelper.GetParentContracts(node.PublicKey, node.Password, body.ContractAddress);
+                    if (!IsBaseStationClose())
+                    {
+                        DatabaseHelper.Log($"Base station is not close to this node. Creating additional contracts. Incoming contract: {body.ContractAddress}");
+
+                        var parentContractBalance = contractHelper.GetBalance(node.PublicKey, node.Password, body.ContractAddress);
+                        if (!AlreadyInvolvedInThisContractChain(body.ContractAddress, parents))
+                        {
+                            AddCurrentContractToParents(parents, body.ContractAddress);
+
+                            // todo: devide parentContractBalance by 2
+                            // todo: dont send to the sender node?
+                            contractAddress = contractHelper.CreateContract(node.PublicKey, node.Password, new HexBigInteger(parentContractBalance), baseStationNode.PublicKey, ContractGracePeriod, parents.ToArray());
+                            SaveContractLocally(contractAddress);
+                            SendContractCreatedMessageToNeighborNodes(contractAddress);
+                        }
+                        else
+                        {
+                            DatabaseHelper.Log($"Already involved in this contract chain. {contractAddress}");
+                        }
                     }
                     else
                     {
-                        DatabaseHelper.Log($"Already involved in this contract chain. {contractAddress}");
-                        Console.WriteLine($"Already involved in this contract chain. {contractAddress}");
+                        DatabaseHelper.Log($"Base station is close to this node. Set the contract and its parents to RouteFound state. Incoming contract: {body.ContractAddress}. parents: TBD ");
+                        contractHelper.RouteFound(node.PublicKey, node.Password, body.ContractAddress, node.PublicKey);
+                        foreach (var parent in parents)
+                        {
+                            if(parent != "0x0000000000000000000000000000000000000000")
+                            { 
+                                contractHelper.RouteFound(node.PublicKey, node.Password, parent, node.PublicKey);
+                            }
+                        }
                     }
 
                     break;

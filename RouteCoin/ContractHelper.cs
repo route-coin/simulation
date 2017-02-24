@@ -80,10 +80,13 @@ namespace RouteCoin
             return contractAddress;
         }
         
-        public string RouteFound(string contractAddress, string callerAddress)
+        public string RouteFound(string nodePublicKey, string nodePassword, string contractAddress, string callerAddress)
         {
             Task.Run(async () =>
             {
+
+                await UnlockAccount(nodePublicKey, nodePassword);
+
                 var ipcClient = new IpcClient(_getAddress);
                 var web3 = new Web3(ipcClient);
 
@@ -91,8 +94,7 @@ namespace RouteCoin
                 var destinationAddressRouteFoundFunction = contract.GetFunction("destinationAddressRouteFound");
 
                 var transactionHash = await destinationAddressRouteFoundFunction.SendTransactionAsync(callerAddress);
-                Console.WriteLine($"RouteFound,{transactionHash},{DateTime.UtcNow}");
-                Trace.WriteLine($"RouteFound,{transactionHash},{DateTime.UtcNow}");
+                DatabaseHelper.Log($"RouteFound,{transactionHash},{DateTime.UtcNow}");
                 var keepChecking = true;
                 var maxRetry = 20;
                 var retry = 0;
@@ -101,7 +103,7 @@ namespace RouteCoin
                     var reciept = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
                     if (reciept != null)
                     {
-                        Trace.WriteLine($"RouteFoundSubmitted,{reciept.ContractAddress},{DateTime.UtcNow}");
+                        DatabaseHelper.Log($"RouteFoundSubmitted,{reciept.ContractAddress},{DateTime.UtcNow}");
                         return reciept.ContractAddress;
                     }
                     // Transacion not submitted. wait 3 seconds and check again
@@ -129,7 +131,7 @@ namespace RouteCoin
 
                 var transactionHash = await destinationAddressRouteFoundFunction.SendTransactionAsync(callerAddress);
 
-                Trace.WriteLine($"RouteConfirmed,{transactionHash},{DateTime.UtcNow}");
+                DatabaseHelper.Log($"RouteConfirmed,{transactionHash},{DateTime.UtcNow}");
                 var keepChecking = true;
                 var maxRetry = 20;
                 var retry = 0;
@@ -138,7 +140,7 @@ namespace RouteCoin
                     var reciept = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
                     if (reciept != null)
                     {
-                        Trace.WriteLine($"RouteConfirmedSubmitted,{reciept.ContractAddress},{DateTime.UtcNow}");
+                        DatabaseHelper.Log($"RouteConfirmedSubmitted,{reciept.ContractAddress},{DateTime.UtcNow}");
                         return reciept.ContractAddress;
                     }
                     // Transacion not submitted. wait 3 seconds and check again

@@ -71,9 +71,8 @@ namespace DatabaseRepository
             return nodes;
         }
 
-        public static void Log(string message, string eventName = "")
+        public static void Log(string message, string eventName = "", bool showInConsole = true)
         {
-            
             var dbContext = new RouteCoinEntities();
             dbContext.Logs.Add(new Log()
             {
@@ -83,6 +82,11 @@ namespace DatabaseRepository
                 NodePublicKey = "not set" // Program.node?.PublicKey ?? 
             });
             dbContext.SaveChanges();
+
+            if(showInConsole)
+            { 
+                Console.WriteLine(message);
+            }
         }
     }
 }

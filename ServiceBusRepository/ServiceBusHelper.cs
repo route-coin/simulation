@@ -8,19 +8,8 @@ namespace ServiceBusRepository
 {
     public class ServiceBusHelper
     {
-        private static string RouteCoinTopicName = "RouteCoinTopic";
         private static string RouteCoinSubscriptionName = "RouteCoinMessages";
         private static string ConnectionString = ConfigurationManager.AppSettings["Microsoft.ServiceBus.ConnectionString"];
-        public static void CreateTopic()
-        {
-            var namespaceManager = NamespaceManager.CreateFromConnectionString(ConnectionString);
-
-            if (!namespaceManager.TopicExists(RouteCoinTopicName))
-            {
-                namespaceManager.CreateTopic(RouteCoinTopicName);
-                DatabaseHelper.Log("Topic created");
-            }
-        }
 
         public static void CreateTopic(string publicKey)
         {
@@ -37,20 +26,16 @@ namespace ServiceBusRepository
         {
             var namespaceManager = NamespaceManager.CreateFromConnectionString(ConnectionString);
 
-            //var myMessagesFilter = new SqlFilter($"ToAddress = '{ publicKey }'");
-
-            if (!namespaceManager.SubscriptionExists(RouteCoinTopicName, RouteCoinSubscriptionName))
+            if (!namespaceManager.SubscriptionExists(publicKey, RouteCoinSubscriptionName))
             {
-                //namespaceManager.
-                //namespaceManager.CreateSubscription(RouteCoinTopicName, RouteCoinSubscriptionName, myMessagesFilter);
-                namespaceManager.CreateSubscription(RouteCoinTopicName, RouteCoinSubscriptionName);
+                namespaceManager.CreateSubscription(publicKey, RouteCoinSubscriptionName);
                 DatabaseHelper.Log("Subscription created.");
             }
         }
 
-        public static void ListenToMessages()
+        public static void ListenToMessages(string publicKey)
         {
-            var Client = SubscriptionClient.CreateFromConnectionString(ConnectionString, RouteCoinTopicName, RouteCoinSubscriptionName);
+            var Client = SubscriptionClient.CreateFromConnectionString(ConnectionString, publicKey, RouteCoinSubscriptionName);
 
             // Configure the callback options.
             OnMessageOptions options = new OnMessageOptions();
@@ -77,7 +62,7 @@ namespace ServiceBusRepository
 
         public static void SendMessageToTopic(Node fromNode, Node toNode, Node baseStationNode, string contractAddress, WhisperMessage.State subject)
         {
-            TopicClient Client = TopicClient.CreateFromConnectionString(ConnectionString, RouteCoinTopicName);
+            TopicClient Client = TopicClient.CreateFromConnectionString(ConnectionString, toNode.PublicKey);
 
             var message = new WhisperMessage()
             {

@@ -57,6 +57,8 @@ namespace ContractCreator
 
         private static void SendCreateContractMessage(Random random)
         {
+            // TODO: pick a node that is not close to BS
+
             var baseStationNode = DatabaseHelper.GetBaseStation();
             var nodes = DatabaseHelper.GetActiveNodes().Where(m=>!m.IsBaseStation).ToList();
             var node = nodes[random.Next(0, nodes.Count - 1)];
@@ -66,6 +68,8 @@ namespace ContractCreator
 
         private static void SendCreateContractMessage(string publicKey)
         {
+            // TODO: pick a node that is not close to BS
+
             var baseStationNode = DatabaseHelper.GetBaseStation();
             var nodes = DatabaseHelper.GetActiveNodes().Where(m => !m.IsBaseStation).ToList();
             var node = DatabaseHelper.GetNodeByPublicKey(publicKey);

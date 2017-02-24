@@ -48,7 +48,7 @@ namespace RouteCoin
                     var web3 = new Web3(ipcClient);
                     var gas = new HexBigInteger(200000);
                     //balance = new HexBigInteger(200000);
-                    var transactionHash = await web3.Eth.DeployContract.SendRequestAsync(_abi, _byteCode, nodePublicKey, new HexBigInteger(900000), new HexBigInteger(10000), new object[] { destinationAddress, contractGracePeriod, parentContracts });
+                    var transactionHash = await web3.Eth.DeployContract.SendRequestAsync(_abi, _byteCode, nodePublicKey, new HexBigInteger(900000), balance, new object[] { destinationAddress, contractGracePeriod, parentContracts });
                     DatabaseHelper.Log($"ContractCreated,{transactionHash}");
                     var keepChecking = true;
                     var maxRetry = 20;

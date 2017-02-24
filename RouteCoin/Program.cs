@@ -7,6 +7,8 @@ using System.Collections.Generic;
 using DatabaseRepository;
 using ServiceBusRepository;
 using Nethereum.Hex.HexTypes;
+using System.Linq;
+using System.IO;
 
 namespace RouteCoin
 {
@@ -23,11 +25,17 @@ namespace RouteCoin
 
         static void Main(string[] args)
         {
-            //ServiceBusHelper.CreateTopic();
-
             baseStationNode = DatabaseHelper.GetBaseStation();
 
             node = DatabaseHelper.DedicateNode();
+
+            if (node == null)
+            {
+                Console.Write("No free node to be dedicated. all nodes are running");
+                Console.Write("Press any key to exit");
+                Console.Read();
+                return;
+            }
 
             ServiceBusHelper.SubscribeToTopic(node.PublicKey);
 
@@ -44,7 +52,8 @@ namespace RouteCoin
             {
                 try
                 {
-                    if(ProcessMessage(message))
+                    Console.WriteLine("Recieved Message...");
+                    if (ProcessMessage(message))
                         message.Complete();
                     else
                         message.Abandon();
@@ -56,7 +65,7 @@ namespace RouteCoin
                 }
             }, options);
 
-            Console.Write("Press any key to exit");
+            Console.WriteLine("Press any key to exit");
             Console.Read();
 
             DatabaseHelper.ReleaseNode(node);
@@ -69,6 +78,8 @@ namespace RouteCoin
             var balance = new HexBigInteger(10000);
             var contractAddress = string.Empty;
 
+            Console.WriteLine($"Processing Message: { body.Subject }");
+
             switch (body.Subject)
             {
                 case WhisperMessage.State.CreateContract:
@@ -79,17 +90,26 @@ namespace RouteCoin
                     break;
 
                 case WhisperMessage.State.ContractCreated:
-                    // if node is close to BS, then can confirm
+                    // TODO: if node is close to BS, then can confirm
                     // todo: add code to confirm
                     //else if not close to BS
                     var parentContractBalance = contractHelper.GetBalance(node.PublicKey, node.Password, body.ContractAddress);
                     var parents = contractHelper.GetParentContracts(node.PublicKey, node.Password, body.ContractAddress);
-                    AddCurrentContractToParents(parents, body.ContractAddress);
+                    if (!AlreadyInvolvedInThisContractChain(body.ContractAddress, parents))
+                    {
+                        AddCurrentContractToParents(parents, body.ContractAddress);
 
-                    // todo: devide parentContractBalance by 2
-                    // todo: dont send to the sender node?
-                    contractAddress = contractHelper.CreateContract(node.PublicKey, node.Password, new HexBigInteger(parentContractBalance), baseStationNode.PublicKey, ContractGracePeriod, parents.ToArray());
-                    SendContractCreatedMessageToNeighborNodes(contractAddress);
+                        // todo: devide parentContractBalance by 2
+                        // todo: dont send to the sender node?
+                        contractAddress = contractHelper.CreateContract(node.PublicKey, node.Password, new HexBigInteger(parentContractBalance), baseStationNode.PublicKey, ContractGracePeriod, parents.ToArray());
+                        SaveContractLocally(contractAddress);
+                        SendContractCreatedMessageToNeighborNodes(contractAddress);
+                    }
+                    else
+                    {
+                        DatabaseHelper.Log($"Already involved in this contract chain. {contractAddress}");
+                        Console.WriteLine($"Already involved in this contract chain. {contractAddress}");
+                    }
 
                     break;
 
@@ -105,6 +125,48 @@ namespace RouteCoin
 
             return true;
 
+        }
+
+        private static bool AlreadyInvolvedInThisContractChain(string contractAddress, List<string> parents)
+        {
+            string path = $@"{Environment.CurrentDirectory}\{node.PublicKey}.txt";
+            if (File.Exists(path))
+            {
+                var addresses = File.ReadAllLines(path);
+                if (addresses.Any(m => parents.Contains(m)) || addresses.Any(m => m == contractAddress))
+                    return true;
+                else
+                    return false;
+
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        private static void SaveContractLocally(string contractAddress)
+        {
+            if (string.IsNullOrEmpty(contractAddress))
+            {
+                return;
+            }
+
+            string path = $@"{Environment.CurrentDirectory}\{node.PublicKey}.txt";
+            if (!File.Exists(path))
+            {
+                using (StreamWriter sw = File.CreateText(path))
+                {
+                    sw.WriteLine(contractAddress);
+                }
+            }
+            else
+            {
+                using (StreamWriter sw = File.AppendText(path))
+                {
+                    sw.WriteLine(contractAddress);
+                }
+            }
         }
 
         private static void SendContractCreatedMessageToNeighborNodes(string contractAddress)

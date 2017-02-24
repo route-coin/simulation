@@ -9,9 +9,9 @@ namespace DatabaseRepository
         public static Node DedicateNode()
         {
             var dbContext = new RouteCoinEntities();
-            //var node = dbContext.Nodes.FirstOrDefault(m => m.IsRunning == false && m.IsBaseStation == true);
-            //if (node == null) // base station is running, pick another one
-            var node = dbContext.Nodes.FirstOrDefault(m => m.IsRunning == false && m.IsBaseStation == false);
+            var node = dbContext.Nodes.FirstOrDefault(m => m.IsRunning == false && m.IsBaseStation == true);
+            if (node == null) // base station is running, pick another one
+                node = dbContext.Nodes.FirstOrDefault(m => m.IsRunning == false && m.IsBaseStation == false);
 
             if (node != null)
             {

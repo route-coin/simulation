@@ -29,7 +29,7 @@ namespace ServiceBusRepository
             if (!namespaceManager.SubscriptionExists(publicKey, RouteCoinSubscriptionName))
             {
                 namespaceManager.CreateSubscription(publicKey, RouteCoinSubscriptionName);
-                DatabaseHelper.Log("Subscription created.");
+                DatabaseHelper.Log($"Subscription created. Publickey: {publicKey}");
             }
         }
 

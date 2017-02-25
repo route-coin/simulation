@@ -85,7 +85,14 @@ namespace DatabaseRepository
 
             if(showInConsole)
             { 
+                if(!string.IsNullOrEmpty(eventName))
+                    Console.ForegroundColor = ConsoleColor.Red;
+
                 Console.WriteLine(message);
+
+                if (!string.IsNullOrEmpty(eventName))
+                    Console.ResetColor();
+
             }
         }
     }

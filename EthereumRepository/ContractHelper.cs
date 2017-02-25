@@ -18,19 +18,17 @@ namespace EthereumRepository
         private static string _getAddress = "./geth.ipc";
         private static int _maxRetry = 20;
         private static int _sleepBetweenRetry = 15000;
-        private static Nethereum.Hex.HexTypes.HexBigInteger _accountUnlockTime = new Nethereum.Hex.HexTypes.HexBigInteger(120);
+        private static HexBigInteger _accountUnlockTime = new HexBigInteger(600);
 
-        public async Task<bool> UnlockAccount(string buyerPublicKey, string buyerAccountPassword)
+        public async Task<bool> UnlockAccount(string publicKey, string password)
         {
-            DatabaseHelper.Log($"TryToUnlockAccount,{buyerPublicKey}");
-
             var ipcClient = new IpcClient(_getAddress);
             var web3 = new Web3(ipcClient);
 
             // Unlock the caller's account with the given password
-            var unlockResult = await web3.Personal.UnlockAccount.SendRequestAsync(buyerPublicKey, buyerAccountPassword, _accountUnlockTime);
+            var unlockResult = await web3.Personal.UnlockAccount.SendRequestAsync(publicKey, password, _accountUnlockTime);
 
-            DatabaseHelper.Log($"AccountUnlocked,{unlockResult}");
+            //DatabaseHelper.Log($"Account unlocked: {publicKey}");
 
             return unlockResult;
         } 
@@ -49,9 +47,8 @@ namespace EthereumRepository
                     var ipcClient = new IpcClient(_getAddress);
                     var web3 = new Web3(ipcClient);
                     var gas = new HexBigInteger(200000);
-                    //balance = new HexBigInteger(200000);
                     var transactionHash = await web3.Eth.DeployContract.SendRequestAsync(_abi, _byteCode, nodePublicKey, new HexBigInteger(900000), balance, new object[] { destinationAddress, contractGracePeriod, parentContracts });
-                    DatabaseHelper.Log($"ContractCreated,{transactionHash}");
+                    DatabaseHelper.Log($"Contract transaction submitted. trx:{transactionHash}");
                     var keepChecking = true;
                     var retry = 0;
                     while (keepChecking)
@@ -59,7 +56,7 @@ namespace EthereumRepository
                         var reciept = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
                         if (reciept != null)
                         {
-                            DatabaseHelper.Log($"ContractSubmitted,{reciept.ContractAddress}", $"ContractCreated:{reciept.ContractAddress}");
+                            DatabaseHelper.Log($"Contract submitted. Contract PublicKey:{reciept.ContractAddress}", $"ContractCreated,{reciept.ContractAddress},{DateTime.UtcNow}");
                             contractAddress = reciept.ContractAddress;
                             return contractAddress;
                         }
@@ -95,7 +92,7 @@ namespace EthereumRepository
                 var destinationAddressRouteFoundFunction = contract.GetFunction("destinationAddressRouteFound");
 
                 var transactionHash = await destinationAddressRouteFoundFunction.SendTransactionAsync(callerAddress);
-                DatabaseHelper.Log($"RouteFound,{transactionHash},{DateTime.UtcNow}");
+                DatabaseHelper.Log($"Contract transaction submitted. trx: {transactionHash}");
                 var keepChecking = true;
                 var retry = 0;
                 while (keepChecking)
@@ -103,7 +100,7 @@ namespace EthereumRepository
                     var reciept = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
                     if (reciept != null)
                     {
-                        DatabaseHelper.Log($"RouteFoundSubmitted,{reciept.ContractAddress},{DateTime.UtcNow}");
+                        DatabaseHelper.Log($"RouteFound submitted. Contract PublicKey:{reciept.ContractAddress}", $"RouteFound,{reciept.ContractAddress},{DateTime.UtcNow}");
                         return reciept.ContractAddress;
                     }
                     // Transacion not submitted. wait 3 seconds and check again

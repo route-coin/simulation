@@ -9,9 +9,9 @@ namespace DatabaseRepository
         public static Node DedicateNode()
         {
             var dbContext = new RouteCoinEntities();
-            //var node = dbContext.Nodes.FirstOrDefault(m => m.IsRunning == false && m.IsBaseStation == true);
-            //if (node == null) // base station is running, pick another one
-            var node = dbContext.Nodes.FirstOrDefault(m => m.IsRunning == false && m.IsBaseStation == false);
+            var node = dbContext.Nodes.FirstOrDefault(m => m.IsRunning == false && m.IsBaseStation == true);
+            if (node == null) // base station is running, pick another one
+                node = dbContext.Nodes.FirstOrDefault(m => m.IsRunning == false && m.IsBaseStation == false);
 
             if (node != null)
             {
@@ -32,6 +32,12 @@ namespace DatabaseRepository
 
             return node;
             
+        }
+
+        public static Node GetNodeByPublicKey(string publicKey)
+        {
+            var dbContext = new RouteCoinEntities();
+            return dbContext.Nodes.FirstOrDefault(m => m.PublicKey == publicKey);
         }
 
         public static List<Node> GetActiveNodes()
@@ -65,9 +71,8 @@ namespace DatabaseRepository
             return nodes;
         }
 
-        public static void Log(string message, string eventName = "")
+        public static void Log(string message, string eventName = "", bool showInConsole = true)
         {
-            
             var dbContext = new RouteCoinEntities();
             dbContext.Logs.Add(new Log()
             {
@@ -77,6 +82,18 @@ namespace DatabaseRepository
                 NodePublicKey = "not set" // Program.node?.PublicKey ?? 
             });
             dbContext.SaveChanges();
+
+            if(showInConsole)
+            { 
+                if(!string.IsNullOrEmpty(eventName))
+                    Console.ForegroundColor = ConsoleColor.Red;
+
+                Console.WriteLine(message);
+
+                if (!string.IsNullOrEmpty(eventName))
+                    Console.ResetColor();
+
+            }
         }
     }
 }

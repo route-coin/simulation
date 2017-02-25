@@ -2,9 +2,8 @@ pragma solidity ^0.4.8;
 
 contract RouteCoin {
 
-	// Array of parent contracts that this contract was generated based on.
-    uint8 arraylength = 10;
-	address[10] parentContracts;
+	// parent contract that this contract was generated based on.
+	address parentContract;
 
     // The public key of the buyer. Reza: we need to hash this.
     address buyer;   
@@ -24,20 +23,14 @@ contract RouteCoin {
     enum State { Created, Expired, Completed, Aborted, RouteFound }
     State state;
 
-    function RouteCoin(address _finalDestination, uint _contractGracePeriod, address[10] _parentContracts) 
+    function RouteCoin(address _finalDestination, uint _contractGracePeriod, address _parentContract) 
         payable
     {
         buyer = msg.sender;
         contractStartTime = now;        
         finalDestination = _finalDestination;
         contractGracePeriod = _contractGracePeriod;
-        uint8 x = 0;
-        while(x < arraylength)
-        {
-        	parentContracts[x] = _parentContracts[x]; // initialize array to all zeros
-        	x++;
-        }
-
+		parentContract = _parentContract;
     }
 
     modifier require(bool _condition) {
@@ -111,10 +104,10 @@ contract RouteCoin {
          return this.balance;
      }
 
-	 function getParentContracts()
-	 	constant returns (address[10])
+	 function getParentContract()
+	 	constant returns (address)
      {
-         return parentContracts;
+         return parentContract;
      }
 
 

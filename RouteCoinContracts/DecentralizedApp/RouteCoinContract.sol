@@ -5,6 +5,10 @@ contract RouteCoin {
 	// parent contract that this contract was generated based on.
 	address parentContract;
 
+	// this shows how many hups has happened until this contract was created.
+	// for now we will limit this to be 5 hups. after 5 hups any nodes getting a whisper about a contract, will ignore.
+	unit public hupCount;
+		
     // The public key of the buyer. Reza: we need to hash this.
     address buyer;   
 

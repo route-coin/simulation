@@ -27,7 +27,7 @@ contract RouteCoin {
     enum State { Created, Expired, Completed, Aborted, RouteFound }
     State state;
 
-    function RouteCoin(address _finalDestination, uint _contractGracePeriod, address _parentContract, uint _hupCount) 
+    function RouteCoin(address _finalDestination, uint _contractGracePeriod, address _parentContract) 
         payable
     {
         buyer = msg.sender;
@@ -39,6 +39,8 @@ contract RouteCoin {
         {
             RouteCoin m = RouteCoin(_parentContract);
             hupCount = m.getHupCount() + 1; 
+            if(hupCount > 5)
+                throw;
         }
 		else
 		{
@@ -61,6 +63,11 @@ contract RouteCoin {
         _;
     }
 
+    modifier onlyDestinationAddress() {
+        if (msg.sender != finalDestination) throw;
+        _;
+    }
+
     modifier expired() {
         if (now < contractStartTime + contractGracePeriod) throw;
         _;
@@ -72,7 +79,10 @@ contract RouteCoin {
     }
 
     function destinationAddressRouteFound()
-        //expired // contract must be in the Created state to be able to foundDestinationAddress
+        //expired // contract must be in the Created state to be able to foundDestinationAddress    
+        // onlySeller 
+        // Cannot uncomment this, since we are just setting the seller at this point. 
+        // maybe we can stop the buyer or destination address from calling this if needed
         inState(State.Created)
         returns (State)
     {
@@ -83,7 +93,7 @@ contract RouteCoin {
     }
 
     function destinationAddressRouteConfirmed()
-        //onlyBuyer  // only buyer can confirm the working route 
+        onlyDestinationAddress  // only onlyDestinationAddress can confirm the working route 
         inState(State.RouteFound)  // contract must be in the Created state to be able to confirmPurchase
         payable
         returns (State)
@@ -96,7 +106,7 @@ contract RouteCoin {
     }
 
     function abort()
-        //onlyBuyer // only buyer can abort the contract
+        onlyBuyer // only buyer can abort the contract
         inState(State.Created)  // contract must be in the Created state to be able to abort
         returns (State)
     {

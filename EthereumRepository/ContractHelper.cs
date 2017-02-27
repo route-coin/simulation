@@ -33,7 +33,7 @@ namespace EthereumRepository
             return unlockResult;
         } 
 
-        public string CreateContract(string nodePublicKey, string nodePassword, HexBigInteger balance, string destinationAddress, int contractGracePeriod, string[] parentContracts)
+        public string CreateContract(string nodePublicKey, string nodePassword, HexBigInteger balance, string destinationAddress, int contractGracePeriod, string parentContract)
         {
             var contractAddress = string.Empty;
             // create a contract
@@ -47,7 +47,7 @@ namespace EthereumRepository
                     var ipcClient = new IpcClient(_getAddress);
                     var web3 = new Web3(ipcClient);
                     var gas = new HexBigInteger(200000);
-                    var transactionHash = await web3.Eth.DeployContract.SendRequestAsync(_abi, _byteCode, nodePublicKey, new HexBigInteger(900000), balance, new object[] { destinationAddress, contractGracePeriod, parentContracts });
+                    var transactionHash = await web3.Eth.DeployContract.SendRequestAsync(_abi, _byteCode, nodePublicKey, new HexBigInteger(900000), balance, new object[] { destinationAddress, contractGracePeriod, parentContract });
                     DatabaseHelper.Log($"Contract transaction submitted. trx:{transactionHash}");
                     var keepChecking = true;
                     var retry = 0;
@@ -172,9 +172,9 @@ namespace EthereumRepository
             return result;
         }
 
-        public List<string> GetParentContracts(string nodePublicKey, string nodePassword, string contractAddress)
+        public string GetParentContract(string nodePublicKey, string nodePassword, string contractAddress)
         {
-            var result = new List<string>();
+            string result = string.Empty;
             Task.Run(async () =>
             {
                 await UnlockAccount(nodePublicKey, nodePassword);
@@ -182,9 +182,9 @@ namespace EthereumRepository
                 var web3 = new Web3(ipcClient);
 
                 var contract = web3.Eth.GetContract(_abi, contractAddress);
-                var getBalanceFunction = contract.GetFunction("getParentContracts");
+                var getBalanceFunction = contract.GetFunction("getParentContract");
 
-                result = await getBalanceFunction.CallAsync<List<string>>();
+                result = await getBalanceFunction.CallAsync<string>();
 
                 return result;
 

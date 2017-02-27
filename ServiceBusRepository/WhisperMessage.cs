@@ -12,7 +12,9 @@ namespace ServiceBusRepository
         public enum State
         {
             CreateContract,
-            ContractCreated
+            ContractCreated,
+            RouteFound,
+            RouteConfirmed,
         }
 
         public string BaseStationAddress { get; set; }

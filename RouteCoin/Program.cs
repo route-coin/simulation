@@ -98,16 +98,15 @@ namespace RouteCoin
 
                 case WhisperMessage.State.ContractCreated:
 
-                    var parents = contractHelper.GetParentContracts(node.PublicKey, node.Password, body.ContractAddress);
+                    var parent = contractHelper.GetParentContract(node.PublicKey, node.Password, body.ContractAddress);
                     if (!IsBaseStationClose())
                     {
                         DatabaseHelper.Log($"Base station is not close to this node. Creating additional contracts. Incoming contract: {body.ContractAddress}");
 
                         var parentContractBalance = contractHelper.GetBalance(node.PublicKey, node.Password, body.ContractAddress);
-                        if (!AlreadyInvolvedInThisContractChain(body.ContractAddress, parents))
+                        if (!AlreadyInvolvedInThisContractChain(body.ContractAddress, parent))
                         {
-                            AddCurrentContractToParents(parents, body.ContractAddress);
-                            contractAddress = contractHelper.CreateContract(node.PublicKey, node.Password, new HexBigInteger(parentContractBalance/2), baseStationNode.PublicKey, ContractGracePeriod, parents.ToArray());
+                            contractAddress = contractHelper.CreateContract(node.PublicKey, node.Password, new HexBigInteger(parentContractBalance/2), baseStationNode.PublicKey, ContractGracePeriod, body.ContractAddress);
                             SaveContractLocally(contractAddress);
                             SendContractCreatedMessageToNeighborNodes(contractAddress, body.FromAddress);
                         }
@@ -120,22 +119,19 @@ namespace RouteCoin
                     {
                         DatabaseHelper.Log($"Base station is close to this node. Set the contract and its parents to RouteFound state. Incoming contract: {body.ContractAddress}. parents: TBD ");
                         contractHelper.RouteFound(node.PublicKey, node.Password, body.ContractAddress, node.PublicKey);
-                        foreach (var parent in parents)
-                        {
-                            if(parent != "0x0000000000000000000000000000000000000000")
-                            { 
-                                contractHelper.RouteFound(node.PublicKey, node.Password, parent, node.PublicKey);
-                            }
+                        if(parent != "0x0000000000000000000000000000000000000000" && parent != string.Empty && parent != "0x")
+                        { 
+                            contractHelper.RouteFound(node.PublicKey, node.Password, parent, node.PublicKey);
                         }
                     }
 
                     break;
 
-                //case "RouteFound":
-                //    break;
+                case WhisperMessage.State.RouteFound:
+                    break;
 
-                //case "RouteConfirmed":
-                //    break;
+                case WhisperMessage.State.RouteConfirmed:
+                    break;
 
                 default:
                     break;
@@ -145,13 +141,13 @@ namespace RouteCoin
 
         }
 
-        private static bool AlreadyInvolvedInThisContractChain(string contractAddress, List<string> parents)
+        private static bool AlreadyInvolvedInThisContractChain(string contractAddress, string parentAddress)
         {
             string path = $@"{Environment.CurrentDirectory}\{node.PublicKey}.txt";
             if (File.Exists(path))
             {
                 var addresses = File.ReadAllLines(path);
-                if (addresses.Any(m => parents.Contains(m)) || addresses.Any(m => m == contractAddress))
+                if (addresses.Any(m => m == contractAddress || m == contractAddress))
                     return true;
                 else
                     return false;
@@ -210,18 +206,6 @@ namespace RouteCoin
             else
             {
                 DatabaseHelper.Log("No nodes are close to this node.");
-            }
-        }
-
-        private static void AddCurrentContractToParents(List<string> parents, string contractAddress)
-        {
-            for (int i = 0; i < parents.Count; i++)
-            {
-                if (parents[i] == "0x0000000000000000000000000000000000000000")
-                {
-                    parents[i] = contractAddress;
-                    break;
-                }
             }
         }
 

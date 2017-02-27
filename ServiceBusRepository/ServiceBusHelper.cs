@@ -3,6 +3,7 @@ using Microsoft.ServiceBus.Messaging;
 using System.Configuration;
 using System;
 using DatabaseRepository;
+using System.Collections.Generic;
 
 namespace ServiceBusRepository
 {
@@ -60,7 +61,7 @@ namespace ServiceBusRepository
             }, options);
         }
 
-        public static void SendMessageToTopic(Node fromNode, Node toNode, Node baseStationNode, string contractAddress, WhisperMessage.State subject)
+        public static void SendMessageToTopic(Node fromNode, Node toNode, Node baseStationNode, string contractAddress, WhisperMessage.State subject, List<string> contractsChain)
         {
             TopicClient Client = TopicClient.CreateFromConnectionString(ConnectionString, toNode.PublicKey);
 
@@ -70,7 +71,8 @@ namespace ServiceBusRepository
                 ContractAddress = contractAddress,
                 FromAddress = fromNode?.PublicKey,
                 ToAddress = toNode.PublicKey,
-                Subject = subject
+                Subject = subject,
+                ContractsChain = contractsChain
             };
             DatabaseHelper.Log($"Sent service bus message. From {fromNode.PublicKey}, To: {toNode.PublicKey}, Subject: {subject}, Contract: {contractAddress}");
             Client.Send(new BrokeredMessage(message));

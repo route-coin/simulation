@@ -22,6 +22,7 @@ namespace ServiceBusRepository
         public string FromAddress { get; set; }
         public string ToAddress { get; set; }
         public State Subject { get; set; }
+        public List<string> ContractsChain { get; set; }
 
     }
 }

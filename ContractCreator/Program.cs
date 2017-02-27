@@ -62,7 +62,7 @@ namespace ContractCreator
             var baseStationNode = DatabaseHelper.GetBaseStation();
             var nodes = DatabaseHelper.GetActiveNodes().Where(m=>!m.IsBaseStation).ToList();
             var node = nodes[random.Next(0, nodes.Count - 1)];
-            ServiceBusHelper.SendMessageToTopic(new Node(), node, baseStationNode, null, WhisperMessage.State.CreateContract);
+            ServiceBusHelper.SendMessageToTopic(new Node(), node, baseStationNode, null, WhisperMessage.State.CreateContract, null);
             Console.WriteLine($"Message sent to create contract. Node: {node.PublicKey}");
         }
 
@@ -75,7 +75,7 @@ namespace ContractCreator
             var node = DatabaseHelper.GetNodeByPublicKey(publicKey);
             if (node != null)
             { 
-                ServiceBusHelper.SendMessageToTopic(new Node(), node, baseStationNode, null, WhisperMessage.State.CreateContract);
+                ServiceBusHelper.SendMessageToTopic(new Node(), node, baseStationNode, null, WhisperMessage.State.CreateContract, null);
                 Console.WriteLine($"Message sent to create contract. Node: {publicKey}");
             }
             else

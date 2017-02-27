@@ -139,6 +139,17 @@ contract RouteCoin {
          return hupCount;
      }
 
+     function getBuyer()
+	 	constant returns (address)
+     {
+         return buyer;
+     }
+
+     function getSeller()
+	 	constant returns (address)
+     {
+         return seller;
+     }
 
     // Events
     event aborted();

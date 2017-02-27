@@ -77,7 +77,28 @@ namespace EthereumRepository
 
             return contractAddress;
         }
-        
+
+        public string GetBuyer(string nodePublicKey, string nodePassword, string contractAddress)
+        {
+            string result = string.Empty;
+            Task.Run(async () =>
+            {
+                await UnlockAccount(nodePublicKey, nodePassword);
+                var ipcClient = new IpcClient(_getAddress);
+                var web3 = new Web3(ipcClient);
+
+                var contract = web3.Eth.GetContract(_abi, contractAddress);
+                var getBalanceFunction = contract.GetFunction("getBuyer");
+
+                result = await getBalanceFunction.CallAsync<string>();
+
+                return result;
+
+            }).GetAwaiter().GetResult();
+
+            return result;
+        }
+
         public string RouteFound(string nodePublicKey, string nodePassword, string contractAddress, string callerAddress)
         {
             Task.Run(async () =>

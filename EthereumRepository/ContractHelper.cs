@@ -56,7 +56,7 @@ namespace EthereumRepository
                         var reciept = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
                         if (reciept != null)
                         {
-                            DatabaseHelper.Log($"Contract submitted. Contract PublicKey:{reciept.ContractAddress}", $"ContractCreated,{reciept.ContractAddress},{DateTime.UtcNow}");
+                            DatabaseHelper.Log($"Contract submitted. Contract PublicKey:{reciept.ContractAddress}", $"{nodePublicKey},{reciept.ContractAddress},ContractCreated,{DateTime.UtcNow.ToString("hh:mm:ss")}");
                             contractAddress = reciept.ContractAddress;
                             return contractAddress;
                         }
@@ -176,7 +176,7 @@ namespace EthereumRepository
                     var reciept = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
                     if (reciept != null)
                     {
-                        DatabaseHelper.Log($"RouteFound submitted. Block number:{reciept.BlockNumber.Value.ToString()}", $"RouteFound,{contractAddress},{DateTime.UtcNow}");
+                        DatabaseHelper.Log($"RouteFound submitted. Block number:{reciept.BlockNumber.Value.ToString()}", $"{nodePublicKey},{contractAddress},RouteFound,{DateTime.UtcNow.ToString("hh:mm:ss")}");
                         result = reciept.BlockNumber.Value.ToString();
                         return result;
                     }
@@ -216,7 +216,7 @@ namespace EthereumRepository
                     var reciept = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
                     if (reciept != null)
                     {
-                        DatabaseHelper.Log($"RouteConfirm Submitted. Block number:{reciept.BlockNumber.Value.ToString()}", $"RouteConfirmed,{contractAddress},{DateTime.UtcNow}");
+                        DatabaseHelper.Log($"RouteConfirm Submitted. Block number:{reciept.BlockNumber.Value.ToString()}", $"{nodePublicKey},{contractAddress},RouteConfirmed,{DateTime.UtcNow.ToString("hh:mm:ss")}");
                         result = reciept.BlockNumber.Value.ToString();
                         return result;
                     }

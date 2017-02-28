@@ -50,7 +50,7 @@ namespace RouteCoin
             // Configure the callback options.
             OnMessageOptions options = new OnMessageOptions();
             options.AutoComplete = false;
-            options.AutoRenewTimeout = TimeSpan.FromMinutes(1);
+            options.AutoRenewTimeout = TimeSpan.FromMinutes(10);
 
             Client.OnMessage((message) =>
             {

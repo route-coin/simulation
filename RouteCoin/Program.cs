@@ -78,7 +78,7 @@ namespace RouteCoin
         {
             var body = message.GetBody<WhisperMessage>();
             var contractHelper = new ContractHelper();
-            var balance = new HexBigInteger(10000);
+            var balance = new HexBigInteger(100000);
             var contractAddress = string.Empty;
             var parent = string.Empty;
             var buyer = string.Empty;
@@ -91,7 +91,7 @@ namespace RouteCoin
                     if (!IsBaseStationClose())
                     {
                         // initial contract, so all parent contract addresses will be 0x
-                        var parentContract = string.Empty;
+                        var parentContract = "0x0";
                         contractAddress = contractHelper.CreateContract(node.PublicKey, node.Password, balance, baseStationNode.PublicKey, ContractGracePeriod, parentContract);
                         SaveContractLocally(contractAddress, string.Empty);
                         SendContractCreatedMessageToNeighborNodes(contractAddress, string.Empty);
@@ -110,35 +110,31 @@ namespace RouteCoin
                         DatabaseHelper.Log($"Base station is not close to this node. Creating additional contracts. Incoming contract: {body.ContractAddress}");
 
                         var parentContractBalance = contractHelper.GetBalance(node.PublicKey, node.Password, body.ContractAddress);
-                        if (!AlreadyInvolvedInThisContractChain(body.ContractAddress, parent))
-                        {
+                        //if (!AlreadyInvolvedInThisContractChain(body.ContractAddress, parent))
+                        //{
                             contractAddress = contractHelper.CreateContract(node.PublicKey, node.Password, new HexBigInteger(parentContractBalance/2), baseStationNode.PublicKey, ContractGracePeriod, body.ContractAddress);
                             SaveContractLocally(contractAddress, body.ContractAddress);
                             SendContractCreatedMessageToNeighborNodes(contractAddress, body.FromAddress);
-                        }
-                        else
-                        {
-                            DatabaseHelper.Log($"Already involved in this contract chain. {contractAddress}");
-                        }
+                        //}
+                        //else
+                        //{
+                        //    DatabaseHelper.Log($"Already involved in this contract chain. {contractAddress}");
+                        //}
                     }
                     else
                     {
-                        DatabaseHelper.Log($"Base station is close to this node. Set the contract and its parents to RouteFound state. Incoming contract: {body.ContractAddress}. parents: TBD ");
-                        contractHelper.RouteFound(node.PublicKey, node.Password, body.ContractAddress, node.PublicKey);
-                        if(parent != "0x0000000000000000000000000000000000000000" && parent != string.Empty && parent != "0x")
+                        DatabaseHelper.Log($"Base station is close to this node. Set the contract to RouteFound state. Incoming contract: {body.ContractAddress}.");
+                        var routeFoundSubmitted = contractHelper.RouteFound(node.PublicKey, node.Password, body.ContractAddress, node.PublicKey);
+                        if (!string.IsNullOrEmpty(routeFoundSubmitted))
                         {
-                            var routeFoundSubmitted = contractHelper.RouteFound(node.PublicKey, node.Password, parent, node.PublicKey);
-                            if (!string.IsNullOrEmpty(routeFoundSubmitted))
-                            {
-                                buyer = contractHelper.GetBuyer(node.PublicKey, node.Password, body.ContractAddress);
-                                DatabaseHelper.Log($"RouteFound transaction submitted. Contract: { parent }. Seller: {node.PublicKey}");
-                                ServiceBusHelper.SendMessageToTopic(node, new Node() { PublicKey = buyer }, baseStationNode, parent, WhisperMessage.State.RouteFound, null);
-                                DatabaseHelper.Log($"RouteFound whisper sent o buyer. Contract: { parent }. Buyer: {buyer}. Seller: {node.PublicKey}");
-                            }
-                            else
-                            {
-                                DatabaseHelper.Log($"RouteFound transaction was not submitted successfully. Contract: { parent }");
-                            }
+                             buyer = contractHelper.GetBuyer(node.PublicKey, node.Password, body.ContractAddress);
+                             DatabaseHelper.Log($"RouteFound transaction submitted. Contract: { body.ContractAddress }. Seller: {node.PublicKey}");
+                             ServiceBusHelper.SendMessageToTopic(node, new Node() { PublicKey = buyer }, baseStationNode, body.ContractAddress, WhisperMessage.State.RouteFound, null);
+                             DatabaseHelper.Log($"RouteFound whisper sent o buyer. Contract: { body.ContractAddress }. Buyer: {buyer}. Seller: {node.PublicKey}");
+                        }
+                        else
+                        {
+                             DatabaseHelper.Log($"RouteFound transaction was not submitted successfully. Contract: { parent }");
                         }
                     }
 
@@ -146,13 +142,15 @@ namespace RouteCoin
 
                 case WhisperMessage.State.RouteFound:
                     parent = contractHelper.GetParentContract(node.PublicKey, node.Password, body.ContractAddress);
-                    if (parent != "0x0000000000000000000000000000000000000000" && parent != string.Empty && parent != "0x")
+                    if (parent != "0x0000000000000000000000000000000000000000" && parent != string.Empty && parent != "0x" && parent != "0x0")
                     {
                         var routeFoundSubmitted = contractHelper.RouteFound(node.PublicKey, node.Password, parent, node.PublicKey);
                         if (!string.IsNullOrEmpty(routeFoundSubmitted))
                         {
-                            buyer = contractHelper.GetBuyer(node.PublicKey, node.Password, body.ContractAddress);
+                            buyer = contractHelper.GetBuyer(node.PublicKey, node.Password, parent);
+                            DatabaseHelper.Log($"RouteFound transaction submitted. Contract: { parent }. Seller: {node.PublicKey}");
                             ServiceBusHelper.SendMessageToTopic(node, new Node() { PublicKey = buyer }, baseStationNode, parent, WhisperMessage.State.RouteFound, null);
+                            DatabaseHelper.Log($"RouteFound whisper sent o buyer. Contract: { parent }. Buyer: {buyer}. Seller: {node.PublicKey}");
                         }
                         else
                         {
@@ -170,6 +168,9 @@ namespace RouteCoin
                 case WhisperMessage.State.RouteConfirmed:
                     if (node.PublicKey == baseStationNode.PublicKey) // it is base station node, so confirm all the contracts came from the message
                     {
+                        DatabaseHelper.Log($"Node is base station. confirming all contracts in the chain.");
+                        DatabaseHelper.Log($"Contracts to be confirmed: {body.ContractsChain.Count}.");
+
                         foreach (var contract in body.ContractsChain)
                         {
                             // TODO: what if some of these don't work?
@@ -186,18 +187,27 @@ namespace RouteCoin
                         }
                     }
                     else
-                    { 
-                        var childContract = FindNextNode(body.ContractAddress);
-                        if (!string.IsNullOrEmpty(childContract))
+                    {
+                        if (!IsBaseStationClose())
                         {
-                            var seller = contractHelper.GetSeller(node.PublicKey, node.Password, childContract);
-                            body.ContractsChain.Add(childContract);
-                            ServiceBusHelper.SendMessageToTopic(node, new Node() { PublicKey = seller }, baseStationNode, childContract, WhisperMessage.State.RouteConfirmed, body.ContractsChain);
-                            DatabaseHelper.Log($"RouteConfirm whisper sent to seller. Contract: { body.ContractAddress }. Buyer: {buyer}.");
+                            var childContract = FindNextNode(body.ContractAddress);
+                            if (!string.IsNullOrEmpty(childContract))
+                            {
+                                var seller = contractHelper.GetSeller(node.PublicKey, node.Password, childContract);
+                                body.ContractsChain.Add(childContract);
+                                ServiceBusHelper.SendMessageToTopic(node, new Node() { PublicKey = seller }, baseStationNode, childContract, WhisperMessage.State.RouteConfirmed, body.ContractsChain);
+                                DatabaseHelper.Log($"RouteConfirm whisper sent to seller. Contract: { body.ContractAddress }. Seller: {seller}.");
+                            }
+                            else
+                            {
+                                DatabaseHelper.Log($"Didn't find a contract with parent: {body.ContractAddress} which this node had created.");
+                            }
                         }
                         else
                         {
-                            DatabaseHelper.Log($"Didn't find a contract with parent: {body.ContractAddress} which this node had created.");
+                            DatabaseHelper.Log($"Node is close to Base Station. Passing the message to Base Station.");
+                            ServiceBusHelper.SendMessageToTopic(node, new Node() { PublicKey = baseStationNode.PublicKey }, baseStationNode, body.ContractAddress, WhisperMessage.State.RouteConfirmed, body.ContractsChain);
+                            DatabaseHelper.Log($"RouteConfirm whisper sent to Base Station. Contract: { body.ContractAddress }.");
                         }
                     }
                     break;
@@ -238,7 +248,7 @@ namespace RouteCoin
             if (File.Exists(path))
             {
                 var addresses = File.ReadAllLines(path);
-                if (addresses.Any(m => m == contractAddress || m == contractAddress))
+                if (addresses.Any(m => m == contractAddress || m == parentAddress))
                     return true;
                 else
                     return false;
@@ -269,7 +279,7 @@ namespace RouteCoin
             {
                 using (StreamWriter sw = File.AppendText(path))
                 {
-                    sw.WriteLine(contractAddress);
+                    sw.WriteLine($"{contractAddress},{parentContract}");
                 }
             }
         }

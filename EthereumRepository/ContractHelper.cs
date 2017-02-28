@@ -13,12 +13,12 @@ namespace EthereumRepository
     public class ContractHelper
     {
         // Smart Contract API (json interface) and byte code
-        private static string _abi = @"[{""constant"":false,""inputs"":[],""name"":""destinationAddressRouteFound"",""outputs"":[{""name"":"""",""type"":""uint8""}],""payable"":false,""type"":""function""},{""constant"":false,""inputs"":[],""name"":""getBalance"",""outputs"":[{""name"":"""",""type"":""uint256""}],""payable"":false,""type"":""function""},{""constant"":false,""inputs"":[],""name"":""getState"",""outputs"":[{""name"":"""",""type"":""uint8""}],""payable"":false,""type"":""function""},{""constant"":false,""inputs"":[],""name"":""abort"",""outputs"":[{""name"":"""",""type"":""uint8""}],""payable"":false,""type"":""function""},{""constant"":true,""inputs"":[],""name"":""getHupCount"",""outputs"":[{""name"":"""",""type"":""uint256""}],""payable"":false,""type"":""function""},{""constant"":false,""inputs"":[],""name"":""destinationAddressRouteConfirmed"",""outputs"":[{""name"":"""",""type"":""uint8""}],""payable"":true,""type"":""function""},{""constant"":true,""inputs"":[],""name"":""getParentContract"",""outputs"":[{""name"":"""",""type"":""address""}],""payable"":false,""type"":""function""},{""inputs"":[{""name"":""_finalDestination"",""type"":""address""},{""name"":""_contractGracePeriod"",""type"":""uint256""},{""name"":""_parentContract"",""type"":""address""}],""payable"":true,""type"":""constructor""},{""anonymous"":false,""inputs"":[],""name"":""aborted"",""type"":""event""},{""anonymous"":false,""inputs"":[],""name"":""routeFound"",""type"":""event""},{""anonymous"":false,""inputs"":[],""name"":""routeAccepted"",""type"":""event""}]";
-        private static string _byteCode = "60606040526040516060806104f98339810160409081528151602083015191909201515b60028054600160a060020a03338116600160a060020a0319928316179092554260055560048054868416908316179055600684905560008054928416929091168217815590156101005781905080600160a060020a031663436565b16000604051602001526040518163ffffffff167c0100000000000000000000000000000000000000000000000000000000028152600401809050602060405180830381600087803b15156100cf57fe5b60325a03f115156100dc57fe5b505060405151600190810190819055600590111590506100fb57610000565b610106565b60006001555b5b505050505b6103de8061011b6000396000f300606060405236156100675763ffffffff60e060020a600035041663047854d9811461006957806312065fe01461009d5780631865c57d146100bf57806335a063b4146100f3578063436565b1146101275780636c88c36c14610149578063f117771214610175575bfe5b341561007157fe5b6100796101a1565b6040518082600481111561008957fe5b60ff16815260200191505060405180910390f35b34156100a557fe5b6100ad610235565b60408051918252519081900360200190f35b34156100c757fe5b610079610244565b6040518082600481111561008957fe5b60ff16815260200191505060405180910390f35b34156100fb57fe5b61007961024e565b6040518082600481111561008957fe5b60ff16815260200191505060405180910390f35b341561012f57fe5b6100ad6102dc565b60408051918252519081900360200190f35b6100796102e3565b6040518082600481111561008957fe5b60ff16815260200191505060405180910390f35b341561017d57fe5b6101856103a2565b60408051600160a060020a039092168252519081900360200190f35b600080805b60075460ff1660048111156101b757fe5b146101c157610000565b6003805473ffffffffffffffffffffffffffffffffffffffff191633600160a060020a03161790556040517f78d20fa24b6a0a3596e34219ca2fd4ce740f5d3cce342d6b1d76bd879491bf7290600090a1600780546004919060ff19166001835b021790555060075460ff1691505b5b5090565b600160a060020a033016315b90565b60075460ff165b90565b60025460009033600160a060020a0390811691161461026c57610000565b6000805b60075460ff16600481111561028157fe5b1461028b57610000565b6040517f80b62b7017bb13cf105e22749ee2a06a417ffba8c7f57b665057e0f3c2e925d990600090a1600780546003919060ff1916600183610222565b021790555060075460ff1691505b5b505b90565b6001545b90565b60045460009033600160a060020a0390811691161461030157610000565b6004805b60075460ff16600481111561031657fe5b1461032057610000565b6040517f17e8425f2f0f52156cb58fae3262b87ffe900164617ac332659a4b0e2d8434f590600090a1600780546002919060ff19166001835b0217905550600354604051600160a060020a039182169130163180156108fc02916000818181858888f19350505050151561039357610000565b60075460ff1691505b5b505b90565b600054600160a060020a03165b905600a165627a7a72305820ad2b69b89253a1849327d1b64705b88ddf3551c19d8b5a902e045d03e420e5140029";
+        private static string _abi = @"[{""constant"":false,""inputs"":[],""name"":""destinationAddressRouteFound"",""outputs"":[{""name"":"""",""type"":""uint8""}],""payable"":false,""type"":""function""},{""constant"":false,""inputs"":[],""name"":""getBalance"",""outputs"":[{""name"":"""",""type"":""uint256""}],""payable"":false,""type"":""function""},{""constant"":false,""inputs"":[],""name"":""getState"",""outputs"":[{""name"":"""",""type"":""uint8""}],""payable"":false,""type"":""function""},{""constant"":false,""inputs"":[],""name"":""abort"",""outputs"":[{""name"":"""",""type"":""uint8""}],""payable"":false,""type"":""function""},{""constant"":true,""inputs"":[],""name"":""getHupCount"",""outputs"":[{""name"":"""",""type"":""uint256""}],""payable"":false,""type"":""function""},{""constant"":true,""inputs"":[],""name"":""getBuyer"",""outputs"":[{""name"":"""",""type"":""address""}],""payable"":false,""type"":""function""},{""constant"":false,""inputs"":[],""name"":""destinationAddressRouteConfirmed"",""outputs"":[{""name"":"""",""type"":""uint8""}],""payable"":true,""type"":""function""},{""constant"":true,""inputs"":[],""name"":""getSeller"",""outputs"":[{""name"":"""",""type"":""address""}],""payable"":false,""type"":""function""},{""constant"":true,""inputs"":[],""name"":""getParentContract"",""outputs"":[{""name"":"""",""type"":""address""}],""payable"":false,""type"":""function""},{""inputs"":[{""name"":""_finalDestination"",""type"":""address""},{""name"":""_contractGracePeriod"",""type"":""uint256""},{""name"":""_parentContract"",""type"":""address""}],""payable"":true,""type"":""constructor""},{""anonymous"":false,""inputs"":[],""name"":""aborted"",""type"":""event""},{""anonymous"":false,""inputs"":[],""name"":""routeFound"",""type"":""event""},{""anonymous"":false,""inputs"":[],""name"":""routeAccepted"",""type"":""event""}]";
+        private static string _byteCode = "60606040526040516060806104ec8339810160409081528151602083015191909201515b60028054600160a060020a03338116600160a060020a0319928316179092554260055560048054868416908316179055600684905560008054928416929091169190911781556001555b5050505b61046c806100806000396000f3006060604052361561007d5763ffffffff60e060020a600035041663047854d9811461007f57806312065fe0146100b35780631865c57d146100d557806335a063b414610109578063436565b11461013d578063603daf9a1461015f5780636c88c36c1461018b578063dbd0e1b6146101b7578063f1177712146101e3575bfe5b341561008757fe5b61008f61020f565b6040518082600481111561009f57fe5b60ff16815260200191505060405180910390f35b34156100bb57fe5b6100c36102a3565b60408051918252519081900360200190f35b34156100dd57fe5b61008f6102b2565b6040518082600481111561009f57fe5b60ff16815260200191505060405180910390f35b341561011157fe5b61008f6102bc565b6040518082600481111561009f57fe5b60ff16815260200191505060405180910390f35b341561014557fe5b6100c361034a565b60408051918252519081900360200190f35b341561016757fe5b61016f610351565b60408051600160a060020a039092168252519081900360200190f35b61008f610361565b6040518082600481111561009f57fe5b60ff16815260200191505060405180910390f35b34156101bf57fe5b61016f610420565b60408051600160a060020a039092168252519081900360200190f35b34156101eb57fe5b61016f610430565b60408051600160a060020a039092168252519081900360200190f35b600080805b60075460ff16600481111561022557fe5b1461022f57610000565b6003805473ffffffffffffffffffffffffffffffffffffffff191633600160a060020a03161790556040517f78d20fa24b6a0a3596e34219ca2fd4ce740f5d3cce342d6b1d76bd879491bf7290600090a1600780546004919060ff19166001835b021790555060075460ff1691505b5b5090565b600160a060020a033016315b90565b60075460ff165b90565b60025460009033600160a060020a039081169116146102da57610000565b6000805b60075460ff1660048111156102ef57fe5b146102f957610000565b6040517f80b62b7017bb13cf105e22749ee2a06a417ffba8c7f57b665057e0f3c2e925d990600090a1600780546003919060ff1916600183610290565b021790555060075460ff1691505b5b505b90565b6001545b90565b600254600160a060020a03165b90565b60045460009033600160a060020a0390811691161461037f57610000565b6004805b60075460ff16600481111561039457fe5b1461039e57610000565b6040517f17e8425f2f0f52156cb58fae3262b87ffe900164617ac332659a4b0e2d8434f590600090a1600780546002919060ff19166001835b0217905550600354604051600160a060020a039182169130163180156108fc02916000818181858888f19350505050151561041157610000565b60075460ff1691505b5b505b90565b600354600160a060020a03165b90565b600054600160a060020a03165b905600a165627a7a7230582094fae6ba7a218a5f783472cf1c154bd34bad980b11d0d76af71bc7cbcfcdf9830029";
         private static string _getAddress = "./geth.ipc";
         private static int _maxRetry = 20;
         private static int _sleepBetweenRetry = 15000;
-        private static HexBigInteger _accountUnlockTime = new HexBigInteger(600);
+        private static HexBigInteger _accountUnlockTime = new HexBigInteger(3000);
 
         public async Task<bool> UnlockAccount(string publicKey, string password)
         {
@@ -155,6 +155,7 @@ namespace EthereumRepository
 
         public string RouteFound(string nodePublicKey, string nodePassword, string contractAddress, string callerAddress)
         {
+            var result = string.Empty;
             Task.Run(async () =>
             {
 
@@ -167,7 +168,7 @@ namespace EthereumRepository
                 var destinationAddressRouteFoundFunction = contract.GetFunction("destinationAddressRouteFound");
 
                 var transactionHash = await destinationAddressRouteFoundFunction.SendTransactionAsync(callerAddress);
-                DatabaseHelper.Log($"Contract transaction submitted. trx: {transactionHash}");
+                DatabaseHelper.Log($"RouteFound transaction submitted. trx: {transactionHash}");
                 var keepChecking = true;
                 var retry = 0;
                 while (keepChecking)
@@ -175,8 +176,9 @@ namespace EthereumRepository
                     var reciept = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
                     if (reciept != null)
                     {
-                        DatabaseHelper.Log($"RouteFound submitted. Contract PublicKey:{reciept.ContractAddress}", $"RouteFound,{reciept.ContractAddress},{DateTime.UtcNow}");
-                        return reciept.ContractAddress;
+                        DatabaseHelper.Log($"RouteFound submitted. Block number:{reciept.BlockNumber.Value.ToString()}", $"RouteFound,{contractAddress},{DateTime.UtcNow}");
+                        result = reciept.BlockNumber.Value.ToString();
+                        return result;
                     }
                     // Transacion not submitted. wait 3 seconds and check again
                     System.Threading.Thread.Sleep(_sleepBetweenRetry);
@@ -184,15 +186,16 @@ namespace EthereumRepository
                     if (retry > _maxRetry)
                         keepChecking = false;
                 }
-                return string.Empty;
+                return result;
 
             }).GetAwaiter().GetResult();
 
-            return string.Empty;
+            return result;
         }
 
         public string RouteConfirmed(string nodePublicKey, string nodePassword, string contractAddress, string callerAddress)
         {
+            var result = string.Empty;
             Task.Run(async () =>
             {
                 await UnlockAccount(nodePublicKey, nodePassword);
@@ -205,7 +208,7 @@ namespace EthereumRepository
 
                 var transactionHash = await destinationAddressRouteFoundFunction.SendTransactionAsync(callerAddress);
 
-                DatabaseHelper.Log($"RouteConfirmed,{transactionHash},{DateTime.UtcNow}");
+                DatabaseHelper.Log($"RouteConfirm transaction submitted. trx: {transactionHash}");
                 var keepChecking = true;
                 var retry = 0;
                 while (keepChecking)
@@ -213,8 +216,9 @@ namespace EthereumRepository
                     var reciept = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
                     if (reciept != null)
                     {
-                        DatabaseHelper.Log($"RouteConfirmedSubmitted,{reciept.ContractAddress},{DateTime.UtcNow}");
-                        return reciept.ContractAddress;
+                        DatabaseHelper.Log($"RouteConfirm Submitted. Block number:{reciept.BlockNumber.Value.ToString()}", $"RouteConfirmed,{contractAddress},{DateTime.UtcNow}");
+                        result = reciept.BlockNumber.Value.ToString();
+                        return result;
                     }
                     // Transacion not submitted. wait 3 seconds and check again
                     System.Threading.Thread.Sleep(_sleepBetweenRetry);
@@ -222,10 +226,10 @@ namespace EthereumRepository
                     if (retry > _maxRetry)
                         keepChecking = false;
                 }
-                return string.Empty;
+                return result;
             }).GetAwaiter().GetResult();
 
-            return string.Empty;
+            return result;
         }
 
         public BigInteger GetBalance(string nodePublicKey, string nodePassword, string contractAddress)

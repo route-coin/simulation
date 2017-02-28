@@ -36,7 +36,7 @@ namespace ContractCreator
                 if (command.StartsWith("C"))
                 {
                     var commands = command.Split(' ');
-                    if (commands.Length > 1) 
+                    if (commands.Length > 1)
                     {
                         SendCreateContractMessage(commands[1]);
                     }
@@ -45,6 +45,14 @@ namespace ContractCreator
                         SendCreateContractMessage(random);
                     }
 
+                }
+                else if (command.StartsWith("Random"))
+                {
+                    while (true)
+                    {
+                        SendCreateContractMessage(random);
+                        System.Threading.Thread.Sleep(60000); // generate a random contract every 5 mins
+                    }
                 }
                 else
                 {

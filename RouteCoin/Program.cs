@@ -38,6 +38,9 @@ namespace RouteCoin
                 return;
             }
 
+            //var helper = new ContractHelper();
+            //var result = helper.test(node.PublicKey, node.Password);
+
             ServiceBusHelper.SubscribeToTopic(node.PublicKey);
 
             var connectionString = ConfigurationManager.AppSettings["Microsoft.ServiceBus.ConnectionString"];
@@ -90,6 +93,7 @@ namespace RouteCoin
                         // initial contract, so all parent contract addresses will be 0x
                         var parentContract = string.Empty;
                         contractAddress = contractHelper.CreateContract(node.PublicKey, node.Password, balance, baseStationNode.PublicKey, ContractGracePeriod, parentContract);
+                        SaveContractLocally(contractAddress, string.Empty);
                         SendContractCreatedMessageToNeighborNodes(contractAddress, string.Empty);
                     }
                     else
@@ -109,7 +113,7 @@ namespace RouteCoin
                         if (!AlreadyInvolvedInThisContractChain(body.ContractAddress, parent))
                         {
                             contractAddress = contractHelper.CreateContract(node.PublicKey, node.Password, new HexBigInteger(parentContractBalance/2), baseStationNode.PublicKey, ContractGracePeriod, body.ContractAddress);
-                            SaveContractLocally(contractAddress);
+                            SaveContractLocally(contractAddress, body.ContractAddress);
                             SendContractCreatedMessageToNeighborNodes(contractAddress, body.FromAddress);
                         }
                         else
@@ -164,8 +168,38 @@ namespace RouteCoin
                     break;
 
                 case WhisperMessage.State.RouteConfirmed:
-                    ServiceBusHelper.SendMessageToTopic(node, new Node() { PublicKey = body.FromAddress }, baseStationNode, body.ContractAddress, WhisperMessage.State.RouteConfirmed, new List<string> { body.ContractAddress });
-                    DatabaseHelper.Log($"RouteConfirm whisper sent to seller. Contract: { body.ContractAddress }. Buyer: {buyer}.");
+                    if (node.PublicKey == baseStationNode.PublicKey) // it is base station node, so confirm all the contracts came from the message
+                    {
+                        foreach (var contract in body.ContractsChain)
+                        {
+                            // TODO: what if some of these don't work?
+                            // Should we try to abort the confirmed ones?
+                            var routeConfirmSubmitted = contractHelper.RouteConfirmed(node.PublicKey, node.Password, contract, node.PublicKey);
+                            if (!string.IsNullOrEmpty(routeConfirmSubmitted))
+                            {
+                                DatabaseHelper.Log($"RouteConfirm transaction submitted. Contract: { contract }.");
+                            }
+                            else
+                            {
+                                DatabaseHelper.Log($"RouteConfirm transaction failed. Contract: { contract }.");
+                            }
+                        }
+                    }
+                    else
+                    { 
+                        var childContract = FindNextNode(body.ContractAddress);
+                        if (!string.IsNullOrEmpty(childContract))
+                        {
+                            var seller = contractHelper.GetSeller(node.PublicKey, node.Password, childContract);
+                            body.ContractsChain.Add(childContract);
+                            ServiceBusHelper.SendMessageToTopic(node, new Node() { PublicKey = seller }, baseStationNode, childContract, WhisperMessage.State.RouteConfirmed, body.ContractsChain);
+                            DatabaseHelper.Log($"RouteConfirm whisper sent to seller. Contract: { body.ContractAddress }. Buyer: {buyer}.");
+                        }
+                        else
+                        {
+                            DatabaseHelper.Log($"Didn't find a contract with parent: {body.ContractAddress} which this node had created.");
+                        }
+                    }
                     break;
 
                 default:
@@ -174,6 +208,28 @@ namespace RouteCoin
 
             return true;
 
+        }
+
+        private static string FindNextNode(string contractAddress)
+        {
+            string path = $@"{Environment.CurrentDirectory}\{node.PublicKey}.txt";
+            if (File.Exists(path))
+            {
+                var addresses = File.ReadAllLines(path);
+                var line = addresses.FirstOrDefault(m => m.Contains(contractAddress));
+                if (line != null)
+                {
+                    return line.Replace(",", "").Replace(contractAddress, "");
+                }
+                else
+                {
+                    return string.Empty;
+                }
+            }
+            else
+            {
+                return string.Empty;
+            }
         }
 
         private static bool AlreadyInvolvedInThisContractChain(string contractAddress, string parentAddress)
@@ -194,7 +250,7 @@ namespace RouteCoin
             }
         }
 
-        private static void SaveContractLocally(string contractAddress)
+        private static void SaveContractLocally(string contractAddress, string parentContract)
         {
             if (string.IsNullOrEmpty(contractAddress))
             {
@@ -206,7 +262,7 @@ namespace RouteCoin
             {
                 using (StreamWriter sw = File.CreateText(path))
                 {
-                    sw.WriteLine(contractAddress);
+                    sw.WriteLine($"{contractAddress},{parentContract}");
                 }
             }
             else

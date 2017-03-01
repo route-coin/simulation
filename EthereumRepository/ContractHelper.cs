@@ -14,6 +14,7 @@ namespace EthereumRepository
     {
         // Smart Contract API (json interface) and byte code
         private static string _abi = @"[{""constant"":false,""inputs"":[],""name"":""destinationAddressRouteFound"",""outputs"":[{""name"":"""",""type"":""uint8""}],""payable"":false,""type"":""function""},{""constant"":false,""inputs"":[],""name"":""getBalance"",""outputs"":[{""name"":"""",""type"":""uint256""}],""payable"":false,""type"":""function""},{""constant"":false,""inputs"":[],""name"":""getState"",""outputs"":[{""name"":"""",""type"":""uint8""}],""payable"":false,""type"":""function""},{""constant"":false,""inputs"":[],""name"":""abort"",""outputs"":[{""name"":"""",""type"":""uint8""}],""payable"":false,""type"":""function""},{""constant"":true,""inputs"":[],""name"":""getHupCount"",""outputs"":[{""name"":"""",""type"":""uint256""}],""payable"":false,""type"":""function""},{""constant"":true,""inputs"":[],""name"":""getBuyer"",""outputs"":[{""name"":"""",""type"":""address""}],""payable"":false,""type"":""function""},{""constant"":false,""inputs"":[],""name"":""destinationAddressRouteConfirmed"",""outputs"":[{""name"":"""",""type"":""uint8""}],""payable"":true,""type"":""function""},{""constant"":true,""inputs"":[],""name"":""getSeller"",""outputs"":[{""name"":"""",""type"":""address""}],""payable"":false,""type"":""function""},{""constant"":true,""inputs"":[],""name"":""getParentContract"",""outputs"":[{""name"":"""",""type"":""address""}],""payable"":false,""type"":""function""},{""inputs"":[{""name"":""_finalDestination"",""type"":""address""},{""name"":""_contractGracePeriod"",""type"":""uint256""},{""name"":""_parentContract"",""type"":""address""}],""payable"":true,""type"":""constructor""},{""anonymous"":false,""inputs"":[],""name"":""aborted"",""type"":""event""},{""anonymous"":false,""inputs"":[],""name"":""routeFound"",""type"":""event""},{""anonymous"":false,""inputs"":[],""name"":""routeAccepted"",""type"":""event""}]";
+
         private static string _byteCode = "60606040526040516060806104ec8339810160409081528151602083015191909201515b60028054600160a060020a03338116600160a060020a0319928316179092554260055560048054868416908316179055600684905560008054928416929091169190911781556001555b5050505b61046c806100806000396000f3006060604052361561007d5763ffffffff60e060020a600035041663047854d9811461007f57806312065fe0146100b35780631865c57d146100d557806335a063b414610109578063436565b11461013d578063603daf9a1461015f5780636c88c36c1461018b578063dbd0e1b6146101b7578063f1177712146101e3575bfe5b341561008757fe5b61008f61020f565b6040518082600481111561009f57fe5b60ff16815260200191505060405180910390f35b34156100bb57fe5b6100c36102a3565b60408051918252519081900360200190f35b34156100dd57fe5b61008f6102b2565b6040518082600481111561009f57fe5b60ff16815260200191505060405180910390f35b341561011157fe5b61008f6102bc565b6040518082600481111561009f57fe5b60ff16815260200191505060405180910390f35b341561014557fe5b6100c361034a565b60408051918252519081900360200190f35b341561016757fe5b61016f610351565b60408051600160a060020a039092168252519081900360200190f35b61008f610361565b6040518082600481111561009f57fe5b60ff16815260200191505060405180910390f35b34156101bf57fe5b61016f610420565b60408051600160a060020a039092168252519081900360200190f35b34156101eb57fe5b61016f610430565b60408051600160a060020a039092168252519081900360200190f35b600080805b60075460ff16600481111561022557fe5b1461022f57610000565b6003805473ffffffffffffffffffffffffffffffffffffffff191633600160a060020a03161790556040517f78d20fa24b6a0a3596e34219ca2fd4ce740f5d3cce342d6b1d76bd879491bf7290600090a1600780546004919060ff19166001835b021790555060075460ff1691505b5b5090565b600160a060020a033016315b90565b60075460ff165b90565b60025460009033600160a060020a039081169116146102da57610000565b6000805b60075460ff1660048111156102ef57fe5b146102f957610000565b6040517f80b62b7017bb13cf105e22749ee2a06a417ffba8c7f57b665057e0f3c2e925d990600090a1600780546003919060ff1916600183610290565b021790555060075460ff1691505b5b505b90565b6001545b90565b600254600160a060020a03165b90565b60045460009033600160a060020a0390811691161461037f57610000565b6004805b60075460ff16600481111561039457fe5b1461039e57610000565b6040517f17e8425f2f0f52156cb58fae3262b87ffe900164617ac332659a4b0e2d8434f590600090a1600780546002919060ff19166001835b0217905550600354604051600160a060020a039182169130163180156108fc02916000818181858888f19350505050151561041157610000565b60075460ff1691505b5b505b90565b600354600160a060020a03165b90565b600054600160a060020a03165b905600a165627a7a7230582094fae6ba7a218a5f783472cf1c154bd34bad980b11d0d76af71bc7cbcfcdf9830029";
         private static string _getAddress = "./geth.ipc";
         private static int _maxRetry = 20;
@@ -264,6 +265,27 @@ namespace EthereumRepository
 
                 var contract = web3.Eth.GetContract(_abi, contractAddress);
                 var getBalanceFunction = contract.GetFunction("getParentContract");
+
+                result = await getBalanceFunction.CallAsync<string>();
+
+                return result;
+
+            }).GetAwaiter().GetResult();
+
+            return result;
+        }
+
+        public object GetState(string publicKey, string password, string contractAddress)
+        {
+            string result = string.Empty;
+            Task.Run(async () =>
+            {
+                await UnlockAccount(publicKey, password);
+                var ipcClient = new IpcClient(_getAddress);
+                var web3 = new Web3(ipcClient);
+
+                var contract = web3.Eth.GetContract(_abi, contractAddress);
+                var getBalanceFunction = contract.GetFunction("getState");
 
                 result = await getBalanceFunction.CallAsync<string>();
 

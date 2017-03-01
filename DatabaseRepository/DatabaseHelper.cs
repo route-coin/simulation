@@ -29,7 +29,7 @@ namespace DatabaseRepository
             Console.WriteLine($"Public key: { node.PublicKey }");
             Console.WriteLine($"Position X: { node.PositionX }, Y: { node.PositionY}");
 
-            Log("Node dedicated.");
+            Log(node.PublicKey, "Node dedicated.");
 
             return node;
             
@@ -53,7 +53,7 @@ namespace DatabaseRepository
             var nodeToRelease = dbContext.Nodes.FirstOrDefault(m => m.NodeId == node.NodeId);
             nodeToRelease.IsRunning = false;
             dbContext.SaveChanges();
-            Log("Node released");
+            Log(node.PublicKey, "Node released");
         }
 
         public static Node GetBaseStation()
@@ -72,7 +72,7 @@ namespace DatabaseRepository
             return nodes;
         }
 
-        public static void Log(string message, string eventName = "", bool showInConsole = true)
+        public static void Log(string nodeAddress,string message, string eventName = "", bool showInConsole = true)
         {
             var dbContext = new RouteCoinEntities();
             dbContext.Logs.Add(new Log()
@@ -80,7 +80,7 @@ namespace DatabaseRepository
                 Event = eventName,
                 CreatedDate = DateTime.UtcNow,
                 Message = message,
-                NodePublicKey = "not set" // Program.node?.PublicKey ?? 
+                NodePublicKey = nodeAddress
             });
             dbContext.SaveChanges();
 

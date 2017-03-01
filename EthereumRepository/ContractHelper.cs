@@ -49,7 +49,7 @@ namespace EthereumRepository
                     var web3 = new Web3(ipcClient);
                     var gas = new HexBigInteger(200000);
                     var transactionHash = await web3.Eth.DeployContract.SendRequestAsync(_abi, _byteCode, nodePublicKey, new HexBigInteger(900000), balance, new object[] { destinationAddress, contractGracePeriod, parentContract });
-                    DatabaseHelper.Log($"Contract transaction submitted. trx:{transactionHash}");
+                    DatabaseHelper.Log(nodePublicKey, $"Contract transaction submitted. trx:{transactionHash}");
                     var keepChecking = true;
                     var retry = 0;
                     while (keepChecking)
@@ -57,7 +57,7 @@ namespace EthereumRepository
                         var reciept = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
                         if (reciept != null)
                         {
-                            DatabaseHelper.Log($"Contract submitted. Contract PublicKey:{reciept.ContractAddress}", $"{nodePublicKey},{reciept.ContractAddress},ContractCreated,{DateTime.UtcNow.ToString("hh:mm:ss")}");
+                            DatabaseHelper.Log(nodePublicKey, $"Contract submitted. Contract PublicKey:{reciept.ContractAddress}", $"{nodePublicKey},{reciept.ContractAddress},ContractCreated,{DateTime.UtcNow.ToString("hh:mm:ss")}");
                             contractAddress = reciept.ContractAddress;
                             return contractAddress;
                         }
@@ -71,7 +71,7 @@ namespace EthereumRepository
                }
                catch (Exception ex)
                {
-                    DatabaseHelper.Log($"Error: {ex.Message}");
+                    DatabaseHelper.Log(nodePublicKey, $"Error: {ex.Message}");
                     return contractAddress;
                }
             }).GetAwaiter().GetResult();
@@ -104,7 +104,7 @@ namespace EthereumRepository
                 }
                 catch (Exception ex)
                 {
-                    DatabaseHelper.Log($"Error: {ex.Message}");
+                    DatabaseHelper.Log(nodePublicKey, $"Error: {ex.Message}");
                     return transactionHash;
                 }
                 }).GetAwaiter().GetResult();
@@ -169,7 +169,7 @@ namespace EthereumRepository
                 var destinationAddressRouteFoundFunction = contract.GetFunction("destinationAddressRouteFound");
 
                 var transactionHash = await destinationAddressRouteFoundFunction.SendTransactionAsync(callerAddress);
-                DatabaseHelper.Log($"RouteFound transaction submitted. trx: {transactionHash}");
+                DatabaseHelper.Log(nodePublicKey, $"RouteFound transaction submitted. trx: {transactionHash}");
                 var keepChecking = true;
                 var retry = 0;
                 while (keepChecking)
@@ -177,7 +177,7 @@ namespace EthereumRepository
                     var reciept = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
                     if (reciept != null)
                     {
-                        DatabaseHelper.Log($"RouteFound submitted. Block number:{reciept.BlockNumber.Value.ToString()}", $"{nodePublicKey},{contractAddress},RouteFound,{DateTime.UtcNow.ToString("hh:mm:ss")}");
+                        DatabaseHelper.Log(nodePublicKey, $"RouteFound submitted. Block number:{reciept.BlockNumber.Value.ToString()}", $"{nodePublicKey},{contractAddress},RouteFound,{DateTime.UtcNow.ToString("hh:mm:ss")}");
                         result = reciept.BlockNumber.Value.ToString();
                         return result;
                     }
@@ -209,7 +209,7 @@ namespace EthereumRepository
 
                 var transactionHash = await destinationAddressRouteFoundFunction.SendTransactionAsync(callerAddress);
 
-                DatabaseHelper.Log($"RouteConfirm transaction submitted. trx: {transactionHash}");
+                DatabaseHelper.Log(nodePublicKey, $"RouteConfirm transaction submitted. trx: {transactionHash}");
                 var keepChecking = true;
                 var retry = 0;
                 while (keepChecking)
@@ -217,7 +217,7 @@ namespace EthereumRepository
                     var reciept = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
                     if (reciept != null)
                     {
-                        DatabaseHelper.Log($"RouteConfirm Submitted. Block number:{reciept.BlockNumber.Value.ToString()}", $"{nodePublicKey},{contractAddress},RouteConfirmed,{DateTime.UtcNow.ToString("hh:mm:ss")}");
+                        DatabaseHelper.Log(nodePublicKey, $"RouteConfirm Submitted. Block number:{reciept.BlockNumber.Value.ToString()}", $"{nodePublicKey},{contractAddress},RouteConfirmed,{DateTime.UtcNow.ToString("hh:mm:ss")}");
                         result = reciept.BlockNumber.Value.ToString();
                         return result;
                     }

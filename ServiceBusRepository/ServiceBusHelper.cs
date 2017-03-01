@@ -19,7 +19,7 @@ namespace ServiceBusRepository
             if (!namespaceManager.TopicExists(publicKey))
             {
                 namespaceManager.CreateTopic(publicKey);
-                DatabaseHelper.Log($"Topic created: {publicKey}");
+                DatabaseHelper.Log(publicKey, $"Topic created: {publicKey}");
             }
         }
 
@@ -30,7 +30,7 @@ namespace ServiceBusRepository
             if (!namespaceManager.SubscriptionExists(publicKey, RouteCoinSubscriptionName))
             {
                 namespaceManager.CreateSubscription(publicKey, RouteCoinSubscriptionName);
-                DatabaseHelper.Log($"Subscription created. Publickey: {publicKey}");
+                DatabaseHelper.Log(publicKey, $"Subscription created. Publickey: {publicKey}");
             }
         }
 
@@ -74,7 +74,7 @@ namespace ServiceBusRepository
                 Subject = subject,
                 ContractsChain = contractsChain
             };
-            DatabaseHelper.Log($"Sent service bus message. From {fromNode.PublicKey}, To: {toNode.PublicKey}, Subject: {subject}, Contract: {contractAddress}");
+            DatabaseHelper.Log(fromNode?.PublicKey, $"Sent service bus message. From {fromNode?.PublicKey}, To: {toNode?.PublicKey}, Subject: {subject}, Contract: {contractAddress}");
             Client.Send(new BrokeredMessage(message));
         }
 

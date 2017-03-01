@@ -36,7 +36,7 @@ namespace ContractCreator
                 if (command.StartsWith("C"))
                 {
                     var commands = command.Split(' ');
-                    if (commands.Length > 1) 
+                    if (commands.Length > 1)
                     {
                         SendCreateContractMessage(commands[1]);
                     }
@@ -45,6 +45,14 @@ namespace ContractCreator
                         SendCreateContractMessage(random);
                     }
 
+                }
+                else if (command.StartsWith("Random"))
+                {
+                    while (true)
+                    {
+                        SendCreateContractMessage(random);
+                        System.Threading.Thread.Sleep(60000); // generate a random contract every 5 mins
+                    }
                 }
                 else
                 {
@@ -62,7 +70,7 @@ namespace ContractCreator
             var baseStationNode = DatabaseHelper.GetBaseStation();
             var nodes = DatabaseHelper.GetActiveNodes().Where(m=>!m.IsBaseStation).ToList();
             var node = nodes[random.Next(0, nodes.Count - 1)];
-            ServiceBusHelper.SendMessageToTopic(new Node(), node, baseStationNode, null, WhisperMessage.State.CreateContract);
+            ServiceBusHelper.SendMessageToTopic(new Node(), node, baseStationNode, null, WhisperMessage.State.CreateContract, null);
             Console.WriteLine($"Message sent to create contract. Node: {node.PublicKey}");
         }
 
@@ -75,7 +83,7 @@ namespace ContractCreator
             var node = DatabaseHelper.GetNodeByPublicKey(publicKey);
             if (node != null)
             { 
-                ServiceBusHelper.SendMessageToTopic(new Node(), node, baseStationNode, null, WhisperMessage.State.CreateContract);
+                ServiceBusHelper.SendMessageToTopic(new Node(), node, baseStationNode, null, WhisperMessage.State.CreateContract, null);
                 Console.WriteLine($"Message sent to create contract. Node: {publicKey}");
             }
             else

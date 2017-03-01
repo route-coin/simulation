@@ -66,7 +66,7 @@ namespace DatabaseRepository
             var dbContext = new RouteCoinEntities();
             var nodes = dbContext.Nodes.Where(m => m.IsBaseStation == false &&
                                               m.NodeId != node.NodeId &&
-                                              Math.Pow(Math.Abs(node.PositionX - m.PositionX), 2) + Math.Pow(Math.Abs(node.PositionY - m.PositionY), 2) <= coverageArea).ToList();
+                                              Math.Sqrt(Math.Pow(Math.Abs(node.PositionX - m.PositionX), 2) + Math.Pow(Math.Abs(node.PositionY - m.PositionY), 2)) <= coverageArea).ToList();
 
             return nodes;
         }

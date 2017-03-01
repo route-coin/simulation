@@ -227,7 +227,7 @@ namespace RouteCoin
 
         private static bool IsBaseStationClose()
         {
-            return Math.Pow(Math.Abs(node.PositionX - baseStationNode.PositionX), 2) + Math.Pow(Math.Abs(node.PositionY - baseStationNode.PositionY), 2) < CoverageArea;
+            return Math.Sqrt(Math.Pow(Math.Abs(node.PositionX - baseStationNode.PositionX), 2) + Math.Pow(Math.Abs(node.PositionY - baseStationNode.PositionY), 2)) < CoverageArea;
         }
 
     }

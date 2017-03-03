@@ -47,7 +47,6 @@ namespace EthereumRepository
 
                     var ipcClient = new IpcClient(_getAddress);
                     var web3 = new Web3(ipcClient);
-                    var gas = new HexBigInteger(200000);
                     var transactionHash = await web3.Eth.DeployContract.SendRequestAsync(_abi, _byteCode, nodePublicKey, new HexBigInteger(900000), balance, new object[] { destinationAddress, contractGracePeriod, parentContract });
                     DatabaseHelper.Log(nodePublicKey, $"Contract transaction submitted. trx:{transactionHash}");
                     var keepChecking = true;
@@ -57,7 +56,8 @@ namespace EthereumRepository
                         var reciept = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
                         if (reciept != null)
                         {
-                            DatabaseHelper.Log(nodePublicKey, $"Contract submitted. Contract PublicKey:{reciept.ContractAddress}", $"{nodePublicKey},{reciept.ContractAddress},ContractCreated,{DateTime.UtcNow.ToString("hh:mm:ss")}");
+
+                            DatabaseHelper.Log(nodePublicKey, $"Contract submitted. Contract PublicKey:{reciept.ContractAddress}", $"{nodePublicKey},{reciept.ContractAddress},{parentContract},ContractCreated,{reciept.CumulativeGasUsed},{balance},{DateTime.UtcNow.ToString("hh:mm:ss")}");
                             contractAddress = reciept.ContractAddress;
                             return contractAddress;
                         }
@@ -154,7 +154,7 @@ namespace EthereumRepository
             return result;
         }
 
-        public string RouteFound(string nodePublicKey, string nodePassword, string contractAddress, string callerAddress)
+        public string RouteFound(string nodePublicKey, string nodePassword, string contractAddress, string callerAddress, string parentContract)
         {
             var result = string.Empty;
             Task.Run(async () =>
@@ -177,7 +177,7 @@ namespace EthereumRepository
                     var reciept = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
                     if (reciept != null)
                     {
-                        DatabaseHelper.Log(nodePublicKey, $"RouteFound submitted. Block number:{reciept.BlockNumber.Value.ToString()}", $"{nodePublicKey},{contractAddress},RouteFound,{DateTime.UtcNow.ToString("hh:mm:ss")}");
+                        DatabaseHelper.Log(nodePublicKey, $"RouteFound submitted. Block number:{reciept.BlockNumber.Value.ToString()}", $"{nodePublicKey},{contractAddress},{parentContract},RouteFound,{reciept.CumulativeGasUsed},{0},{DateTime.UtcNow.ToString("hh:mm:ss")}");
                         result = reciept.BlockNumber.Value.ToString();
                         return result;
                     }
@@ -194,7 +194,7 @@ namespace EthereumRepository
             return result;
         }
 
-        public string RouteConfirmed(string nodePublicKey, string nodePassword, string contractAddress, string callerAddress)
+        public string RouteConfirmed(string nodePublicKey, string nodePassword, string contractAddress, string callerAddress, string parentContract)
         {
             var result = string.Empty;
             Task.Run(async () =>
@@ -217,7 +217,7 @@ namespace EthereumRepository
                     var reciept = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
                     if (reciept != null)
                     {
-                        DatabaseHelper.Log(nodePublicKey, $"RouteConfirm Submitted. Block number:{reciept.BlockNumber.Value.ToString()}", $"{nodePublicKey},{contractAddress},RouteConfirmed,{DateTime.UtcNow.ToString("hh:mm:ss")}");
+                        DatabaseHelper.Log(nodePublicKey, $"RouteConfirm Submitted. Block number:{reciept.BlockNumber.Value.ToString()}", $"{nodePublicKey},{contractAddress},{parentContract},RouteConfirmed,{reciept.CumulativeGasUsed},{0},{DateTime.UtcNow.ToString("hh:mm:ss")}");
                         result = reciept.BlockNumber.Value.ToString();
                         return result;
                     }

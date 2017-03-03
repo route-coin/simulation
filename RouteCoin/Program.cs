@@ -124,7 +124,7 @@ namespace RouteCoin
                     else
                     {
                         DatabaseHelper.Log(node.PublicKey, $"Base station is close to this node. Set the contract to RouteFound state. Incoming contract: {body.ContractAddress}.");
-                        var routeFoundSubmitted = contractHelper.RouteFound(node.PublicKey, node.Password, body.ContractAddress, node.PublicKey);
+                        var routeFoundSubmitted = contractHelper.RouteFound(node.PublicKey, node.Password, body.ContractAddress, node.PublicKey, parent);
                         if (!string.IsNullOrEmpty(routeFoundSubmitted))
                         {
                              buyer = contractHelper.GetBuyer(node.PublicKey, node.Password, body.ContractAddress);
@@ -144,7 +144,8 @@ namespace RouteCoin
                     parent = contractHelper.GetParentContract(node.PublicKey, node.Password, body.ContractAddress);
                     if (parent != "0x0000000000000000000000000000000000000000" && parent != string.Empty && parent != "0x" && parent != "0x0")
                     {
-                        var routeFoundSubmitted = contractHelper.RouteFound(node.PublicKey, node.Password, parent, node.PublicKey);
+                        var parentsParent = contractHelper.GetParentContract(node.PublicKey, node.Password, parent);
+                        var routeFoundSubmitted = contractHelper.RouteFound(node.PublicKey, node.Password, parent, node.PublicKey, parentsParent);
                         if (!string.IsNullOrEmpty(routeFoundSubmitted))
                         {
                             buyer = contractHelper.GetBuyer(node.PublicKey, node.Password, parent);
@@ -175,7 +176,8 @@ namespace RouteCoin
                         {
                             // TODO: what if some of these don't work?
                             // Should we try to abort the confirmed ones?
-                            var routeConfirmSubmitted = contractHelper.RouteConfirmed(node.PublicKey, node.Password, contract, node.PublicKey);
+                            parent = contractHelper.GetParentContract(node.PublicKey, node.Password, contract);
+                            var routeConfirmSubmitted = contractHelper.RouteConfirmed(node.PublicKey, node.Password, contract, node.PublicKey, parent);
                             if (!string.IsNullOrEmpty(routeConfirmSubmitted))
                             {
                                 DatabaseHelper.Log(node.PublicKey, $"RouteConfirm transaction submitted. Contract: { contract }.");

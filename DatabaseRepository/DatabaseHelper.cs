@@ -80,7 +80,7 @@ namespace DatabaseRepository
                 Event = eventName,
                 CreatedDate = DateTime.UtcNow,
                 Message = message,
-                NodePublicKey = nodeAddress
+                NodePublicKey = nodeAddress ?? "not set"
             });
             dbContext.SaveChanges();
 

@@ -51,7 +51,7 @@ namespace ContractCreator
                     while (true)
                     {
                         SendCreateContractMessage(random);
-                        System.Threading.Thread.Sleep(60000); // generate a random contract every 5 mins
+                        //System.Threading.Thread.Sleep(60000); // generate a random contract every 5 mins
                     }
                 }
                 else
@@ -69,9 +69,17 @@ namespace ContractCreator
 
             var baseStationNode = DatabaseHelper.GetBaseStation();
             var nodes = DatabaseHelper.GetActiveNodes().Where(m=>!m.IsBaseStation).ToList();
-            var node = nodes[random.Next(0, nodes.Count - 1)];
-            ServiceBusHelper.SendMessageToTopic(new Node(), node, baseStationNode, null, WhisperMessage.State.CreateContract, null);
-            Console.WriteLine($"Message sent to create contract. Node: {node.PublicKey}");
+            for (int i = 0; i < nodes.Count; i++)
+            {
+                var createContract = random.Next(0, 1);
+                if(createContract == 1)
+                { 
+                    var node = nodes[random.Next(0, nodes.Count - 1)];
+                    ServiceBusHelper.SendMessageToTopic(new Node(), node, baseStationNode, null, WhisperMessage.State.CreateContract, null);
+                    Console.WriteLine($"Message sent to create contract. Node: {node.PublicKey}");
+                }
+            }
+
         }
 
         private static void SendCreateContractMessage(string publicKey)

@@ -20,7 +20,7 @@ namespace RouteCoin
 
         private static int ContractGracePeriod = 10;
         private static BigInteger InitialContractBalance = 60000; // 
-        private static int CoverageArea = 20; // each node covers 20 meters around it
+        private static int CoverageArea = 50; // each node covers 20 meters around it
 
         private static string RouteCoinSubscriptionName = "RouteCoinMessages";
 

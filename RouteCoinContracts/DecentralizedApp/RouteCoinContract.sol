@@ -35,16 +35,16 @@ contract RouteCoin {
         finalDestination = _finalDestination;
         contractGracePeriod = _contractGracePeriod;
 		parentContract = _parentContract;
-        if(_parentContract != address(0x0))
+        if(_parentContract == address(0x0) ||  _parentContract  == address(0x0000000000000000000000000000000000000000) || _parentContract  == address(0))
         {
+			hupCount = 0; 
+        }
+		else
+		{
             RouteCoin m = RouteCoin(_parentContract);
             hupCount = m.getHupCount() + 1; 
             if(hupCount > 5)
                 throw;
-        }
-		else
-		{
-			hupCount = 0; 
 		}
     }
 

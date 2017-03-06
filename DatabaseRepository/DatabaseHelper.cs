@@ -10,9 +10,9 @@ namespace DatabaseRepository
         public static Node DedicateNode()
         {
             var dbContext = new RouteCoinEntities();
-            var node = dbContext.Nodes.FirstOrDefault(m => m.IsRunning == false && m.IsBaseStation == true);
+            var node = dbContext.Nodes.FirstOrDefault(m => m.IsRunning == false && m.IsBaseStation == true && m.IsActive == true);
             if (node == null) // base station is running, pick another one
-                node = dbContext.Nodes.FirstOrDefault(m => m.IsRunning == false && m.IsBaseStation == false);
+                node = dbContext.Nodes.FirstOrDefault(m => m.IsRunning == false && m.IsBaseStation == false && m.IsActive == true);
 
             if (node != null)
             {
@@ -67,6 +67,7 @@ namespace DatabaseRepository
             var dbContext = new RouteCoinEntities();
             var nodes = dbContext.Nodes.Where(m => m.IsBaseStation == false &&
                                               m.NodeId != node.NodeId &&
+                                              m.IsActive == true &&
                                               SqlFunctions.SquareRoot(Math.Pow(Math.Abs(node.PositionX - m.PositionX), 2) + Math.Pow(Math.Abs(node.PositionY - m.PositionY), 2)) <= coverageArea).ToList();
 
             return nodes;

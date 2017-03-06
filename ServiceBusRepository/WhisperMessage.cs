@@ -17,6 +17,16 @@ namespace ServiceBusRepository
             RouteConfirmed,
         }
 
+        public enum ContractSolidityState
+        {
+            Created,
+            Expired,
+            Completed,
+            Aborted,
+            RouteFound
+        }
+
+
         public string BaseStationAddress { get; set; }
         public string ContractAddress { get; set; }
         public string FromAddress { get; set; }

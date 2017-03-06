@@ -275,9 +275,9 @@ namespace EthereumRepository
             return result;
         }
 
-        public object GetState(string publicKey, string password, string contractAddress)
+        public BigInteger GetState(string publicKey, string password, string contractAddress)
         {
-            string result = string.Empty;
+            BigInteger result = 0;
             Task.Run(async () =>
             {
                 await UnlockAccount(publicKey, password);
@@ -287,7 +287,7 @@ namespace EthereumRepository
                 var contract = web3.Eth.GetContract(_abi, contractAddress);
                 var getBalanceFunction = contract.GetFunction("getState");
 
-                result = await getBalanceFunction.CallAsync<string>();
+                result = await getBalanceFunction.CallAsync<BigInteger>();
 
                 return result;
 
@@ -295,6 +295,30 @@ namespace EthereumRepository
 
             return result;
         }
+
+        
+
+        public BigInteger GetHupCount(string publicKey, string password, string contractAddress)
+        {
+            BigInteger result = 0;
+            Task.Run(async () =>
+            {
+                await UnlockAccount(publicKey, password);
+                var ipcClient = new IpcClient(_getAddress);
+                var web3 = new Web3(ipcClient);
+
+                var contract = web3.Eth.GetContract(_abi, contractAddress);
+                var getBalanceFunction = contract.GetFunction("getHupCount");
+
+                result = await getBalanceFunction.CallAsync<BigInteger>();
+
+                return result;
+
+            }).GetAwaiter().GetResult();
+
+            return result;
+        }
+
 
     }
 }

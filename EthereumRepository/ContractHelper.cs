@@ -57,7 +57,7 @@ namespace EthereumRepository
                         if (reciept != null)
                         {
 
-                            DatabaseHelper.Log(nodePublicKey, $"Contract submitted. Contract PublicKey:{reciept.ContractAddress}", $"{nodePublicKey},{reciept.ContractAddress},{parentContract},ContractCreated,{reciept.CumulativeGasUsed},{balance},{DateTime.UtcNow.ToString("hh:mm:ss")}");
+                            DatabaseHelper.Log(nodePublicKey, $"Contract submitted. Contract PublicKey:{reciept.ContractAddress}", $"{nodePublicKey},{reciept.ContractAddress},{parentContract},ContractCreated,{reciept.CumulativeGasUsed.Value.ToString()},{balance.Value.ToString()},{DateTime.UtcNow.ToString("hh:mm:ss")}");
                             contractAddress = reciept.ContractAddress;
                             return contractAddress;
                         }
@@ -177,7 +177,7 @@ namespace EthereumRepository
                     var reciept = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
                     if (reciept != null)
                     {
-                        DatabaseHelper.Log(nodePublicKey, $"RouteFound submitted. Block number:{reciept.BlockNumber.Value.ToString()}", $"{nodePublicKey},{contractAddress},{parentContract},RouteFound,{reciept.CumulativeGasUsed},{0},{DateTime.UtcNow.ToString("hh:mm:ss")}");
+                        DatabaseHelper.Log(nodePublicKey, $"RouteFound submitted. Block number:{reciept.BlockNumber.Value.ToString()}", $"{nodePublicKey},{contractAddress},{parentContract},RouteFound,{reciept.CumulativeGasUsed.Value.ToString()},{0},{DateTime.UtcNow.ToString("hh:mm:ss")}");
                         result = reciept.BlockNumber.Value.ToString();
                         return result;
                     }
@@ -217,7 +217,7 @@ namespace EthereumRepository
                     var reciept = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
                     if (reciept != null)
                     {
-                        DatabaseHelper.Log(nodePublicKey, $"RouteConfirm Submitted. Block number:{reciept.BlockNumber.Value.ToString()}", $"{nodePublicKey},{contractAddress},{parentContract},RouteConfirmed,{reciept.CumulativeGasUsed},{0},{DateTime.UtcNow.ToString("hh:mm:ss")}");
+                        DatabaseHelper.Log(nodePublicKey, $"RouteConfirm Submitted. Block number:{reciept.BlockNumber.Value.ToString()}", $"{nodePublicKey},{contractAddress},{parentContract},RouteConfirmed,{reciept.CumulativeGasUsed.Value.ToString()},{0},{DateTime.UtcNow.ToString("hh:mm:ss")}");
                         result = reciept.BlockNumber.Value.ToString();
                         return result;
                     }

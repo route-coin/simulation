@@ -21,7 +21,8 @@ namespace RouteCoinCharts
 
         static void Main(string[] args)
         {
-            var nodeCount = 5;
+            var nodeCountToPick = 5;
+            var nodeCount = 25;
             //var contractCount = 1000;
             var simulationPeriod = 500;
             nodes = new Node[nodeCount];
@@ -41,106 +42,64 @@ namespace RouteCoinCharts
                 var now = startTime.AddSeconds(i);
 
                 // try to create 3 contract in each second
-                for (int j = 0; j < nodeCount - 1; j++)
+                for (int j = 0; j < nodeCountToPick - 1; j++)
                 {
-                    var randomBuyer = nodes[rnd.Next(1, nodeCount - 1)];
+                    var buyer = nodes[rnd.Next(1, nodeCount - 1)];
 
                     // node is close to base startion, so nothing to do. pick another node;
-                    if (Math.Sqrt(Math.Pow(Math.Abs(randomBuyer.PositionX - nodes[0].PositionX), 2) + Math.Pow(Math.Abs(randomBuyer.PositionY - nodes[0].PositionY), 2)) <= 50)
+                    if (IsCloseToBs(buyer, now))
                         continue;
-                    // get nodes betweem 10 meter of the random buyer, in this time "now" in topology
-                    var closeNodes = topologies.Where(m => m.Time == now)
-                                                .Where(m => Math.Sqrt(Math.Pow(Math.Abs(m.PositionX - randomBuyer.PositionX), 2) + Math.Pow(Math.Abs(m.PositionY - randomBuyer.PositionY), 2)) <= 50)
-                                                //.Where(m => Math.Sqrt(Math.Pow(Math.Abs(m.PositionX - nodes[0].PositionX), 2) + Math.Pow(Math.Abs(m.PositionY - nodes[0].PositionY), 2)) <= 20)
-                                                .Where(m => m.Node.PublicKey != nodes[0].PublicKey && m.Node.PublicKey != randomBuyer.PublicKey).ToList();
 
-                    var contractPublicKey = GenerateNewContractPublicKey();
+                    log(now, buyer.PublicKey, buyer.IpAddress, Events.ContractCreated.ToString(), GenerateNewContractPublicKey());
 
-                    log(now, randomBuyer.PublicKey, randomBuyer.IpAddress, Events.ContractCreated.ToString(), contractPublicKey);
+                    var closeNodes = GetNeighbors(topologies, buyer, now);
 
-                    if (closeNodes.Count() > 0)
+                    now.AddSeconds(1);
+
+                    foreach (Node node1 in closeNodes)
                     {
-                        log(now, randomBuyer.PublicKey, randomBuyer.IpAddress, Events.ContractCreated.ToString(), contractPublicKey);
-                        foreach (var node in closeNodes)
+                        if (!IsCloseToBs(node1, now))
                         {
-                            log(now, node.Node.PublicKey, node.Node.IpAddress, Events.ContractRead.ToString(), contractPublicKey);
-                        }
-
-                        // get nodes betweem 10 meter of the random buyer, in this time "now" in topology
-                        var closeNodesToBs = closeNodes.Where(m => m.Time == now)
-                                                    .Where(m => Math.Sqrt(Math.Pow(Math.Abs(m.PositionX - 250), 2) + Math.Pow(Math.Abs(m.PositionY - 250), 2)) <= 50).ToList();
-                        //.Where(m => m.Node.PublicKey != nodes[0].PublicKey && m.Node.PublicKey != randomBuyer.PublicKey).ToList();
-
-                        if (closeNodesToBs.Count() > 0)
-                        {
-                            var randonSeller = closeNodesToBs[rnd.Next(0, closeNodesToBs.Count() - 1)];
-
-                            log(now.AddSeconds(rnd.Next(10, 16)), randonSeller.Node.PublicKey, randonSeller.Node.IpAddress, Events.RouteFound.ToString(), contractPublicKey);
-
-                            log(now.AddSeconds(rnd.Next(20, 32)), nodes[0].PublicKey, nodes[0].IpAddress, Events.RouteConfirmed.ToString(), contractPublicKey);
+                            log(now, node1.PublicKey, node1.IpAddress, Events.ContractCreated.ToString(), GenerateNewContractPublicKey());
                         }
                     }
+
+                    now.AddSeconds(1);
+
+                    foreach (Node node in closeNodes)
+                    {
+                        var closeNodes1 = GetNeighbors(topologies, node, now);
+
+                        foreach (Node node1 in closeNodes1)
+                        {
+                            if (!IsCloseToBs(node1, now))
+                            {
+                                log(now, node1.PublicKey, node1.IpAddress, Events.ContractCreated.ToString(), GenerateNewContractPublicKey());
+                            }
+                        }
+
+                    }
+
+                    now.AddSeconds(-2);
+
                 }
 
             }
-            //    for (int i = 0; i < contractCount; i++)
-            //    {
-            //    var randomStart = new Random().Next(5, 10);
-            //    var contractTime = DateTime.Now.AddMinutes(randomStart);
-            //    var contractPublicKey = GenerateNewContractPublicKey();
-            //    var nodesHashset = new HashSet<string>();
-            //    var randomSourceNode = new Random().Next(1, nodeCount - 1);
-            //    var sourceNode = nodes[randomSourceNode];
-            //    nodesHashset.Add(sourceNode.PublicKey);
 
-            //    log(contractTime, sourceNode.PublicKey, sourceNode.IpAddress, Events.ContractCreated.ToString(), contractPublicKey, sourceNode.PositionX, sourceNode.PositionY);
-            //    var randomChildCount = new Random().Next(3, 5);
+        }
 
-            //    for (int j = 0; j < randomChildCount; j++)
-            //    {
-            //        var rndChild = new Random().Next(1, nodeCount - 1);
-            //        var child = nodes[rndChild];
-            //        if (nodesHashset.Add(child.PublicKey))
-            //        {
-            //            log(contractTime, child.PublicKey, child.IpAddress, Events.ContractRead.ToString(), contractPublicKey, child.PositionX, child.PositionY);
-            //            children.Add(child);
-            //        }
-            //    }
+        private static bool IsCloseToBs(Node node, DateTime now)
+        {
+            return Math.Sqrt(Math.Pow(Math.Abs(node.PositionX - nodes[0].PositionX), 2) + Math.Pow(Math.Abs(node.PositionY - nodes[0].PositionY), 2)) <= 50;
+        }
 
-            //    if (children.Count > 0)
-            //    { 
-            //        var randomChild = children[new Random().Next(0, children.Count - 1)];
-            //        var random1 = new Random().Next(10, 14);
-            //        log(contractTime.AddSeconds(random1), randomChild.PublicKey, randomChild.IpAddress, Events.RouteFound.ToString(), contractPublicKey, randomChild.PositionX, randomChild.PositionY);
-            //        if (randomChild.PositionX + 10 < 500)
-            //            randomChild.PositionX += 10;  
-            //        else
-            //            randomChild.PositionX -= 10; 
-
-            //        if (randomChild.PositionY + 10 < 500)
-            //            randomChild.PositionY += 10;  
-            //        else
-            //            randomChild.PositionY -= 10; 
-
-            //        var random2 = new Random().Next(10, 14);
-            //        log(contractTime.AddSeconds(random2), contractDestination.PublicKey, contractDestination.IpAddress, Events.RouteConfirmed.ToString(), contractPublicKey, contractDestination.PositionX, contractDestination.PositionY);
-            //    }
-
-            //    if (sourceNode.PositionX + 10 < 500)
-            //        sourceNode.PositionX += 10;
-            //    else
-            //        sourceNode.PositionX -= 10;
-
-            //    if (sourceNode.PositionY + 10 < 500)
-            //        sourceNode.PositionY += 10;
-            //    else
-            //        sourceNode.PositionY -= 10;
-
-            //    children.Clear();
-
-            //    nodesHashset.Clear();
-            //}
-
+        private static List<Node> GetNeighbors(List<NetworkTopology> topologies, Node node, DateTime now)
+        {
+            var topo = topologies.Where(m => m.Time == now)
+                      .Where(m => Math.Sqrt(Math.Pow(Math.Abs(m.PositionX - node.PositionX), 2) + Math.Pow(Math.Abs(m.PositionY - node.PositionY), 2)) <= 50)
+                      //.Where(m => Math.Sqrt(Math.Pow(Math.Abs(m.PositionX - nodes[0].PositionX), 2) + Math.Pow(Math.Abs(m.PositionY - nodes[0].PositionY), 2)) <= 20)
+                      .Where(m => m.Node.PublicKey != nodes[0].PublicKey && m.Node.PublicKey != node.PublicKey);
+            return topo.Select(m => m.Node).ToList();
         }
 
         private static List<NetworkTopology> GenerateTopoligies(int simulationPeriod, DateTime startTime, Random rnd)

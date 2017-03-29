@@ -21,7 +21,7 @@ namespace RouteCoinCharts
             IsBaseNode = isBaseNode;
             PositionX = positionX;
             PositionY = positionY;
-            RouteCoins = 500;
+            RouteCoins = 100;
         }
         public string IpAddress { get; set; }
         public string PublicKey { get; set; }

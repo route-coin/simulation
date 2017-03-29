@@ -50,9 +50,11 @@ namespace RouteCoinCharts
                     if (IsCloseToBs(buyer, now))
                         continue;
 
-                    buyer.RouteCoins -= 100;
-                    if(buyer.RouteCoins > 0)
+                    buyer.RouteCoins -= 1;
+                    if (buyer.RouteCoins > 0)
                         log(now, buyer.PublicKey, buyer.IpAddress, Events.ContractCreated.ToString(), GenerateNewContractPublicKey());
+                    else
+                        continue;
 
                     var closeNodes = GetNeighbors(topologies, buyer, now);
 
@@ -62,7 +64,7 @@ namespace RouteCoinCharts
                     {
                         if (!IsCloseToBs(node1, now))
                         {
-                            node1.RouteCoins -= 100;
+                            node1.RouteCoins -= 1;
                             if (node1.RouteCoins > 0)
                                 log(now, node1.PublicKey, node1.IpAddress, Events.ContractCreated.ToString(), GenerateNewContractPublicKey());
                         }
@@ -72,15 +74,18 @@ namespace RouteCoinCharts
 
                     foreach (Node node in closeNodes)
                     {
-                        var closeNodes1 = GetNeighbors(topologies, node, now);
+                        if(node.RouteCoins > 0)
+                        { 
+                            var closeNodes1 = GetNeighbors(topologies, node, now);
 
-                        foreach (Node node1 in closeNodes1)
-                        {
-                            if (!IsCloseToBs(node1, now))
+                            foreach (Node node1 in closeNodes1)
                             {
-                                node1.RouteCoins -= 100;
-                                if (node1.RouteCoins > 0)
-                                    log(now, node1.PublicKey, node1.IpAddress, Events.ContractCreated.ToString(), GenerateNewContractPublicKey());
+                                if (!IsCloseToBs(node1, now))
+                                {
+                                    node1.RouteCoins -= 1;
+                                    if (node1.RouteCoins > 0)
+                                        log(now, node1.PublicKey, node1.IpAddress, Events.ContractCreated.ToString(), GenerateNewContractPublicKey());
+                                }
                             }
                         }
 
@@ -113,18 +118,16 @@ namespace RouteCoinCharts
             var networkTopology = new List<NetworkTopology>();
             for (int i = 0; i < simulationPeriod; i++)
             {
-                //var s = $"{startTime.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)} {nodes[0].PositionX} {nodes[0].PositionY}";
                 var s = $"{nodes[0].PositionX} {nodes[0].PositionY}";
-                File.AppendAllLines($"{Environment.CurrentDirectory}\\moves.txt", new List<string>() { s });
+                //File.AppendAllLines($"{Environment.CurrentDirectory}\\moves.txt", new List<string>() { s });
                 networkTopology.Add(new NetworkTopology() { Node = nodes[0], PositionX = nodes[0].PositionX, PositionY = nodes[0].PositionY, Time = startTime });
                 for (int j = 1; j < nodes.Count(); j++)
                 {
                     MoveNode(nodes[j], rnd);
                     networkTopology.Add(new NetworkTopology() { Node = nodes[j], PositionX = nodes[j].PositionX, PositionY = nodes[j].PositionY, Time = startTime });
 
-                    //s = $"{startTime.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)} {nodes[j].PositionX} {nodes[j].PositionY}";
                     s = $"{nodes[j].PositionX} {nodes[j].PositionY}";
-                    File.AppendAllLines($"{Environment.CurrentDirectory}\\moves.txt", new List<string>() { s });
+                    //File.AppendAllLines($"{Environment.CurrentDirectory}\\moves.txt", new List<string>() { s });
                 }
                 startTime = startTime.AddSeconds(1);
             }

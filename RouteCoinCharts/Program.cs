@@ -50,21 +50,25 @@ namespace RouteCoinCharts
                     if (IsCloseToBs(buyer, now))
                         continue;
 
-                    log(now, buyer.PublicKey, buyer.IpAddress, Events.ContractCreated.ToString(), GenerateNewContractPublicKey());
+                    buyer.RouteCoins -= 100;
+                    if(buyer.RouteCoins > 0)
+                        log(now, buyer.PublicKey, buyer.IpAddress, Events.ContractCreated.ToString(), GenerateNewContractPublicKey());
 
                     var closeNodes = GetNeighbors(topologies, buyer, now);
 
-                    now.AddSeconds(1);
+                    now = now.AddSeconds(1);
 
                     foreach (Node node1 in closeNodes)
                     {
                         if (!IsCloseToBs(node1, now))
                         {
-                            log(now, node1.PublicKey, node1.IpAddress, Events.ContractCreated.ToString(), GenerateNewContractPublicKey());
+                            node1.RouteCoins -= 100;
+                            if (node1.RouteCoins > 0)
+                                log(now, node1.PublicKey, node1.IpAddress, Events.ContractCreated.ToString(), GenerateNewContractPublicKey());
                         }
                     }
 
-                    now.AddSeconds(1);
+                    now = now.AddSeconds(1);
 
                     foreach (Node node in closeNodes)
                     {
@@ -74,13 +78,15 @@ namespace RouteCoinCharts
                         {
                             if (!IsCloseToBs(node1, now))
                             {
-                                log(now, node1.PublicKey, node1.IpAddress, Events.ContractCreated.ToString(), GenerateNewContractPublicKey());
+                                node1.RouteCoins -= 100;
+                                if (node1.RouteCoins > 0)
+                                    log(now, node1.PublicKey, node1.IpAddress, Events.ContractCreated.ToString(), GenerateNewContractPublicKey());
                             }
                         }
 
                     }
 
-                    now.AddSeconds(-2);
+                    now = now.AddSeconds(-2);
 
                 }
 

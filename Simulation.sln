@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio 15
+VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{409E77C4-F3CC-4F9C-8797-CB71EF4C8AE4}") = "RouteCoinContracts", "RouteCoinContracts\DecentralizedApp\RouteCoinContracts.solproj", "{6CAFC0C6-A428-4D30-A9F9-700E829FEA51}"
 EndProject
@@ -18,6 +18,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ContractViewer", "ContractViewer\ContractViewer.csproj", "{DC4C9FE3-61E2-47B7-882B-1F4995C3E694}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimulationTests", "SimulationTests\SimulationTests.csproj", "{E4C76A63-8764-4F7E-A6B8-09D66E3A56F7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RouteCoinCharts", "RouteCoinCharts\RouteCoinCharts.csproj", "{288CBE98-B823-487E-933D-ADCA612EC50D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -89,6 +91,14 @@ Global
 		{E4C76A63-8764-4F7E-A6B8-09D66E3A56F7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E4C76A63-8764-4F7E-A6B8-09D66E3A56F7}.Release|x86.ActiveCfg = Release|Any CPU
 		{E4C76A63-8764-4F7E-A6B8-09D66E3A56F7}.Release|x86.Build.0 = Release|Any CPU
+		{288CBE98-B823-487E-933D-ADCA612EC50D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{288CBE98-B823-487E-933D-ADCA612EC50D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{288CBE98-B823-487E-933D-ADCA612EC50D}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{288CBE98-B823-487E-933D-ADCA612EC50D}.Debug|x86.Build.0 = Debug|Any CPU
+		{288CBE98-B823-487E-933D-ADCA612EC50D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{288CBE98-B823-487E-933D-ADCA612EC50D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{288CBE98-B823-487E-933D-ADCA612EC50D}.Release|x86.ActiveCfg = Release|Any CPU
+		{288CBE98-B823-487E-933D-ADCA612EC50D}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -14,6 +14,7 @@ namespace RouteCoinCharts
         private enum Events
         {
             ContractCreated,
+            ContractCreated2,
             ContractRead,
             RouteFound,
             RouteConfirmed
@@ -42,7 +43,7 @@ namespace RouteCoinCharts
                 var now = startTime.AddSeconds(i);
 
                 // try to create 3 contract in each second
-                for (int j = 0; j < nodeCountToPick - 1; j++)
+                for (int j = 0; j < nodeCountToPick; j++)
                 {
                     var buyer = nodes[rnd.Next(1, nodeCount - 1)];
 
@@ -58,7 +59,7 @@ namespace RouteCoinCharts
 
                     var closeNodes = GetNeighbors(topologies, buyer, now);
 
-                    now = now.AddSeconds(1);
+                    now = now.AddSeconds(20);
 
                     foreach (Node node1 in closeNodes)
                     {
@@ -66,11 +67,11 @@ namespace RouteCoinCharts
                         {
                             node1.RouteCoins -= 1;
                             if (node1.RouteCoins > 0)
-                                log(now, node1.PublicKey, node1.IpAddress, Events.ContractCreated.ToString(), GenerateNewContractPublicKey());
+                                log(now, node1.PublicKey, node1.IpAddress, Events.ContractCreated2.ToString(), GenerateNewContractPublicKey());
                         }
                     }
 
-                    now = now.AddSeconds(1);
+                    now = now.AddSeconds(20);
 
                     foreach (Node node in closeNodes)
                     {
@@ -84,14 +85,14 @@ namespace RouteCoinCharts
                                 {
                                     node1.RouteCoins -= 1;
                                     if (node1.RouteCoins > 0)
-                                        log(now, node1.PublicKey, node1.IpAddress, Events.ContractCreated.ToString(), GenerateNewContractPublicKey());
+                                        log(now, node1.PublicKey, node1.IpAddress, Events.ContractCreated2.ToString(), GenerateNewContractPublicKey());
                                 }
                             }
                         }
 
                     }
 
-                    now = now.AddSeconds(-2);
+                    now = now.AddSeconds(-40);
 
                 }
 
@@ -184,29 +185,93 @@ namespace RouteCoinCharts
             nodes[3] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 120, 50);
             nodes[4] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 155, 50);
             nodes[5] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 190, 50);
+            nodes[6] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 225, 50);
+            nodes[7] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 260, 50);
+            nodes[8] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 295, 50);
+            nodes[9] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 330, 50);
 
-            nodes[6] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 50, 85);
-            nodes[7] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 85, 85);
-            nodes[8] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 120, 85);
-            nodes[9] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 155, 85);
-            nodes[10] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 190, 85);
+            nodes[10] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 50, 85);
+            nodes[11] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 85, 85);
+            nodes[12] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 120, 85);
+            nodes[13] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 155, 85);
+            nodes[14] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 190, 85);
+            nodes[15] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 225, 85);
+            nodes[16] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 260, 85);
+            nodes[17] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 295, 85);
+            nodes[18] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 330, 85);
 
-            nodes[11] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 50, 120);
-            nodes[12] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 85, 120);
-            nodes[13] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 155, 120);
-            nodes[14] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 190, 120);
+            nodes[19] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 50, 120);
+            nodes[20] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 85, 120);
+            nodes[21] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 120, 120);
+            nodes[22] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 155, 120);
+            nodes[23] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 190, 120);
+            nodes[24] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 225, 120);
+            nodes[25] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 260, 120);
+            nodes[26] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 295, 120);
+            nodes[27] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 330, 120);
 
-            nodes[15] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 50, 155);
-            nodes[16] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 85, 155);
-            nodes[17] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 120, 155);
-            nodes[18] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 155, 155);
-            nodes[19] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 190, 155);
+            nodes[28] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 50, 155);
+            nodes[29] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 85, 155);
+            nodes[30] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 120, 155);
+            nodes[31] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 155, 155);
+            nodes[32] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 190, 155);
+            nodes[33] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 225, 155);
+            nodes[34] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 260, 155);
+            nodes[35] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 295, 155);
+            nodes[36] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 330, 155);
 
-            nodes[20] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 50, 190);
-            nodes[21] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 85, 190);
-            nodes[22] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 120, 190);
-            nodes[23] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 155, 190);
-            nodes[24] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 190, 190);
+            nodes[37] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 50, 190);
+            nodes[38] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 85, 190);
+            nodes[39] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 120, 190);
+            nodes[40] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 155, 190);
+
+            // Base Station
+            nodes[41] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 190, 190);
+
+            nodes[42] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 225, 190);
+            nodes[43] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 260, 190);
+            nodes[44] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 295, 190);
+            nodes[45] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 330, 190);
+
+            nodes[46] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 50, 225);
+            nodes[47] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 85, 225);
+            nodes[48] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 120, 225);
+            nodes[49] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 155, 225);
+            nodes[50] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 190, 225);
+            nodes[51] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 225, 225);
+            nodes[52] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 260, 225);
+            nodes[53] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 295, 225);
+            nodes[54] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 330, 225);
+
+            nodes[55] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 50, 260);
+            nodes[56] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 85, 260);
+            nodes[57] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 120, 260);
+            nodes[58] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 155, 260);
+            nodes[59] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 190, 260);
+            nodes[60] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 225, 260);
+            nodes[61] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 260, 260);
+            nodes[62] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 295, 260);
+            nodes[63] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 330, 260);
+
+            nodes[64] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 50, 295);
+            nodes[65] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 85, 295);
+            nodes[66] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 120, 295);
+            nodes[67] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 155, 295);
+            nodes[68] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 190, 295);
+            nodes[69] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 225, 295);
+            nodes[70] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 260, 295);
+            nodes[71] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 295, 295);
+            nodes[72] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 330, 295);
+
+            nodes[73] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 50, 330);
+            nodes[74] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 85, 330);
+            nodes[75] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 120, 330);
+            nodes[76] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 155, 330);
+            nodes[77] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 190, 330);
+            nodes[78] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 225, 330);
+            nodes[79] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 260, 330);
+            nodes[80] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 295, 330);
+            nodes[81] = new Node($"0X{Guid.NewGuid().ToString().Replace("-", "").PadLeft(40, '0')}", RandomIpGenerator.GetRandomIp(rnd), false, 330, 330);
 
             //for (int i = 1; i < nodeCount; i++)
             //{
@@ -247,7 +312,7 @@ namespace RouteCoinCharts
         private static void log(DateTime timeStamp, string publicKey, string ipAddress, string eventName, string contractAddress)
         {
             //Current
-            var s = $"{timeStamp.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)} {publicKey} {ipAddress} {eventName} {contractAddress}";
+            var s = $"{timeStamp.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture)},{publicKey},{ipAddress},{eventName},{contractAddress}";
             File.AppendAllLines($"{Environment.CurrentDirectory}\\events.txt", new List<string>() { s });
         }
 

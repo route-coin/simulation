@@ -48,10 +48,10 @@ namespace RouteCoinCharts
                     if (IsCloseToBs(buyer, now))
                         continue;
 
-                    buyer.RouteCoins -= 1;
-                    if (buyer.RouteCoins > 0)
-                        log(now, buyer.PublicKey, buyer.IpAddress, Events.ContractCreated.ToString(), GenerateNewContractPublicKey());
-                    else
+                    var contract = new Contract();
+                    contract = contract.CreateContract(100, buyer, 100, null);
+
+                    if (contract == null) // not enough route coin or some other error, take another node.
                         continue;
 
                     var closeNodes = GetNeighbors(topologies, buyer, now);
@@ -62,13 +62,13 @@ namespace RouteCoinCharts
                     {
                         if (!IsCloseToBs(node1, now))
                         {
-                            node1.RouteCoins -= 1;
-                            if (node1.RouteCoins > 0)
-                                log(now, node1.PublicKey, node1.IpAddress, Events.ContractCreated2.ToString(), GenerateNewContractPublicKey());
+                             var c1 = new Contract();
+                             c1 = c1.CreateContract(contract.ContractBond / 2, node1, 100, contract);
+                             if (c1 == null)
+                                continue;
                         }
-                    }
 
-                    now = now.AddSeconds(20);
+                    }
 
                     foreach (Node node in closeNodes)
                     {

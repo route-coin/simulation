@@ -43,6 +43,23 @@ namespace RouteCoinCharts
 
     public class Contract
     {
+        public string Address { get; set; }
+        public Node Buyer { get; set; }
+        public Node Seller { get; set; }
+        public int ContractBond { get; set; }
+        public int RouteFoundBond { get; set; }
+        public Contract ParentContract { get; set; }
+        public string CreatedDate { get; set; }
+        public int ExpiresInMinutes { get; set; }
+        public int HubCount { get; set; }
+        public ContractStatus Status { get; set; }
+        public enum ContractStatus
+        {
+            Created,
+            RouteFound,
+            RouteConfirmed,
+            Expired
+        }
 
         public Contract CreateContract(int contractBond, Node buyer, int expiresInMinutes, Contract parentContract = null)
         {
@@ -55,7 +72,11 @@ namespace RouteCoinCharts
             ContractBond = contractBond;
             Status = ContractStatus.Created;
             ExpiresInMinutes = expiresInMinutes;
-            HubCount = 1;
+            if (parentContract == null)
+                HubCount = 1;
+            else
+                HubCount = parentContract.HubCount + 1;
+
             ParentContract = parentContract;
             return this;
         }
@@ -88,23 +109,5 @@ namespace RouteCoinCharts
             return this;
         }
 
-        public string Address { get; set; }
-        public Node Buyer { get; set; }
-        public Node Seller { get; set; }
-        public int ContractBond { get; set; }
-        public int RouteFoundBond { get; set; }
-        public Contract ParentContract { get; set; }
-        public string CreatedDate { get; set; }
-        public int ExpiresInMinutes { get; set; }
-        public int HubCount { get; set; }
-
-        public ContractStatus Status { get; set; }
-        public enum ContractStatus
-        {
-            Created,
-            RouteFound,
-            RouteConfirmed,
-            Expired
-        }
     }
 }

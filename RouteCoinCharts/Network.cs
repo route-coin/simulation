@@ -43,24 +43,60 @@ namespace RouteCoinCharts
 
     public class Contract
     {
-        public Contract(int contractBond, string buyer, int expiresInMinutes)
+
+        public Contract CreateContract(int contractBond, Node buyer, int expiresInMinutes, Contract parentContract = null)
         {
+            if (buyer.RouteCoins - contractBond < 0)
+                return null;
+
             Address = Guid.NewGuid().ToString();
             Buyer = buyer;
+            buyer.RouteCoins = buyer.RouteCoins - contractBond;
             ContractBond = contractBond;
             Status = ContractStatus.Created;
             ExpiresInMinutes = expiresInMinutes;
+            HubCount = 1;
+            ParentContract = parentContract;
+            return this;
+        }
+
+
+        public Contract RouteFound(Node seller, int routeFoundBond)
+        {
+            if (seller.RouteCoins - routeFoundBond < 0)
+                return null;
+
+            if (Status != ContractStatus.Created)
+                return null;
+
+            Seller = seller;
+            seller.RouteCoins = seller.RouteCoins - routeFoundBond;
+            RouteFoundBond = routeFoundBond;
+            Status = ContractStatus.RouteFound;
+            return this;
+        }
+
+        public Contract RouteConfirmed()
+        {
+            if (Status != ContractStatus.RouteFound)
+                return null;
+
+            Seller.RouteCoins += ContractBond;
+            Seller.RouteCoins += RouteFoundBond;
+
+            Status = ContractStatus.RouteConfirmed;
+            return this;
         }
 
         public string Address { get; set; }
-        public string Buyer { get; set; }
-        public string Seller { get; set; }
-
+        public Node Buyer { get; set; }
+        public Node Seller { get; set; }
         public int ContractBond { get; set; }
         public int RouteFoundBond { get; set; }
-        public string ParentAddress { get; set; }
+        public Contract ParentContract { get; set; }
         public string CreatedDate { get; set; }
         public int ExpiresInMinutes { get; set; }
+        public int HubCount { get; set; }
 
         public ContractStatus Status { get; set; }
         public enum ContractStatus

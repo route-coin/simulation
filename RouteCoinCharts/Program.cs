@@ -42,9 +42,6 @@ namespace RouteCoinCharts
             {
                 var now = startTime.AddSeconds(i);
 
-                // try to create 3 contract in each second
-                for (int j = 0; j < nodeCountToPick; j++)
-                {
                     var buyer = nodes[rnd.Next(1, nodeCount - 1)];
 
                     // node is close to base startion, so nothing to do. pick another node;
@@ -91,10 +88,6 @@ namespace RouteCoinCharts
                         }
 
                     }
-
-                    now = now.AddSeconds(-40);
-
-                }
 
             }
 

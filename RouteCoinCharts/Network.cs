@@ -40,4 +40,35 @@ namespace RouteCoinCharts
         public int PositionX { get; set; }
         public int PositionY { get; set; }
     }
+
+    public class Contract
+    {
+        public Contract(int contractBond, string buyer, int expiresInMinutes)
+        {
+            Address = Guid.NewGuid().ToString();
+            Buyer = buyer;
+            ContractBond = contractBond;
+            Status = ContractStatus.Created;
+            ExpiresInMinutes = expiresInMinutes;
+        }
+
+        public string Address { get; set; }
+        public string Buyer { get; set; }
+        public string Seller { get; set; }
+
+        public int ContractBond { get; set; }
+        public int RouteFoundBond { get; set; }
+        public string ParentAddress { get; set; }
+        public string CreatedDate { get; set; }
+        public int ExpiresInMinutes { get; set; }
+
+        public ContractStatus Status { get; set; }
+        public enum ContractStatus
+        {
+            Created,
+            RouteFound,
+            RouteConfirmed,
+            Expired
+        }
+    }
 }

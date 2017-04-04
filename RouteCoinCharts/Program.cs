@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Security.Cryptography;
 
 namespace RouteCoinCharts
 {
@@ -22,10 +23,8 @@ namespace RouteCoinCharts
 
         static void Main(string[] args)
         {
-            var nodeCountToPick = 5;
             var nodeCount = 25;
-            //var contractCount = 1000;
-            var simulationPeriod = 500;
+            var simulationPeriod = 1000;
             nodes = new Node[nodeCount];
             var rnd = new Random();
             var contractDestination = GenerateNewDestinationNode(rnd);
@@ -42,52 +41,93 @@ namespace RouteCoinCharts
             {
                 var now = startTime.AddSeconds(i);
 
-                    var buyer = nodes[rnd.Next(1, nodeCount - 1)];
+                var buyer = nodes[rnd.Next(1, nodeCount - 1)];
 
-                    // node is close to base startion, so nothing to do. pick another node;
-                    if (IsCloseToBs(buyer, now))
-                        continue;
+                // node is close to base startion, so nothing to do. pick another node;
+                if (IsCloseToBs(buyer, now))
+                     continue;
 
-                    var contract = new Contract();
-                    contract = contract.CreateContract(100, buyer, 100, null);
+                var contract = new Contract();
 
-                    if (contract == null) // not enough route coin or some other error, take another node.
-                        continue;
+                now = now.AddSeconds(rnd.Next(12, 16));
 
-                    var closeNodes = GetNeighbors(topologies, buyer, now);
+                contract = contract.CreateContract(100, buyer, 100, null);
 
-                    now = now.AddSeconds(20);
+                if (contract == null) // not enough route coin or some other error, take another node.
+                    continue;
 
-                    foreach (Node node1 in closeNodes)
+                var closeNodes = GetNeighbors(topologies, buyer, now);
+
+                now = now.AddSeconds(rnd.Next(12, 16));
+
+                foreach (Node node1 in closeNodes)
+                {
+                    if (!IsCloseToBs(node1, now))
                     {
-                        if (!IsCloseToBs(node1, now))
+                            var c1 = new Contract();
+                            c1 = c1.CreateContract(contract.ContractBond / 2, node1, 100, contract);
+                            if (c1 == null)
+                            continue;
+
+                        now = now.AddSeconds(rnd.Next(12, 16));
+
+                        var closeNodes1 = GetNeighbors(topologies, node1, now);
+
+                        foreach (Node node2 in closeNodes1)
                         {
-                             var c1 = new Contract();
-                             c1 = c1.CreateContract(contract.ContractBond / 2, node1, 100, contract);
-                             if (c1 == null)
-                                continue;
-                        }
-
-                    }
-
-                    foreach (Node node in closeNodes)
-                    {
-                        if(node.RouteCoins > 0)
-                        { 
-                            var closeNodes1 = GetNeighbors(topologies, node, now);
-
-                            foreach (Node node1 in closeNodes1)
+                            if (!IsCloseToBs(node2, now))
                             {
-                                if (!IsCloseToBs(node1, now))
+                                var c2 = new Contract();
+                                c2 = c2.CreateContract(contract.ContractBond / 2, node2, 100, contract);
+                                if (c2 == null)
+                                    continue;
+
+                                now = now.AddSeconds(rnd.Next(12, 16));
+
+                                var closeNodes2 = GetNeighbors(topologies, node2, now);
+
+                                foreach (Node node3 in closeNodes2)
                                 {
-                                    node1.RouteCoins -= 1;
-                                    if (node1.RouteCoins > 0)
-                                        log(now, node1.PublicKey, node1.IpAddress, Events.ContractCreated2.ToString(), GenerateNewContractPublicKey());
+                                    if (!IsCloseToBs(node3, now))
+                                    {
+                                        var c3 = new Contract();
+                                        c3 = c3.CreateContract(c2.ContractBond / 2, node3, 100, c2);
+                                        if (c3 == null)
+                                            continue;
+
+                                        now = now.AddSeconds(rnd.Next(12, 16));
+
+                                        var closeNodes3 = GetNeighbors(topologies, node3, now);
+
+                                        foreach (Node node4 in closeNodes3)
+                                        {
+                                            if (!IsCloseToBs(node4, now))
+                                            {
+                                                var c4 = new Contract();
+                                                c4 = c4.CreateContract(c3.ContractBond / 2, node4, 100, c3);
+                                                if (c3 == null)
+                                                    continue;
+                                            }
+                                            else
+                                            {
+                                                c3.RouteFound(node4, c3.ContractBond / 5);
+                                                //var parent = c3.ParentContract;
+                                                //while (parent != null)
+                                                //{
+                                                //    parent.RouteFound()
+                                                //}
+                                            }
+
+                                        }
+
+                                    }
                                 }
+
                             }
                         }
-
                     }
+
+                }
 
             }
 
@@ -104,7 +144,9 @@ namespace RouteCoinCharts
                       .Where(m => Math.Sqrt(Math.Pow(Math.Abs(m.PositionX - node.PositionX), 2) + Math.Pow(Math.Abs(m.PositionY - node.PositionY), 2)) <= 50)
                       //.Where(m => Math.Sqrt(Math.Pow(Math.Abs(m.PositionX - nodes[0].PositionX), 2) + Math.Pow(Math.Abs(m.PositionY - nodes[0].PositionY), 2)) <= 20)
                       .Where(m => m.Node.PublicKey != nodes[0].PublicKey && m.Node.PublicKey != node.PublicKey);
-            return topo.Select(m => m.Node).ToList();
+            var result = topo.Select(m => m.Node).ToList();
+            result.Shuffle();
+            return result;
         }
 
         private static List<NetworkTopology> GenerateTopoligies(int simulationPeriod, DateTime startTime, Random rnd)
@@ -319,4 +361,26 @@ namespace RouteCoinCharts
             return string.Format("{0}.{1}.{2}.{3}", _random.Next(0, 255), _random.Next(0, 255), _random.Next(0, 255), _random.Next(0, 255));
         }
     }
+
+    static class MyExtensions
+    {
+        public static void Shuffle<T>(this IList<T> list)
+        {
+            RNGCryptoServiceProvider provider = new RNGCryptoServiceProvider();
+            int n = list.Count;
+            while (n > 1)
+            {
+                byte[] box = new byte[1];
+                do provider.GetBytes(box);
+                while (!(box[0] < n * (Byte.MaxValue / n)));
+                int k = (box[0] % n);
+                n--;
+                T value = list[k];
+                list[k] = list[n];
+                list[n] = value;
+            }
+        }
+    }
+
+
 }

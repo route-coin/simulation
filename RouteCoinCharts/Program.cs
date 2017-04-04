@@ -80,7 +80,7 @@ namespace RouteCoinCharts
                                 if (!IsCloseToBs(node2, now))
                                 {
                                     var c2 = new Contract();
-                                    c2 = c2.CreateContract(contract.ContractBond / 2, node2, 100, contract);
+                                    c2 = c2.CreateContract(c1.ContractBond / 2, node2, 100, c1);
                                     if (c2 == null)
                                         continue;
 
@@ -112,18 +112,25 @@ namespace RouteCoinCharts
                                                 }
                                                 else
                                                 {
-                                                    c3.RouteFound(node4, c3.ContractBond / 5);
-                                                    //var parent = c3.ParentContract;
-                                                    //while (parent != null)
-                                                    //{
-                                                    //    parent.RouteFound()
-                                                    //}
+                                                    now = now.AddSeconds(rnd.Next(12, 16));
+                                                    c3.RouteFound(node1, c3.ContractBond / 5);
                                                 }
                                             }
 
                                         }
+                                        else
+                                        {
+                                            now = now.AddSeconds(rnd.Next(12, 16));
+                                            c2.RouteFound(node1, c2.ContractBond / 5);
+
+                                        }
                                     }
 
+                                }
+                                else
+                                {
+                                    now = now.AddSeconds(rnd.Next(12, 16));
+                                    c1.RouteFound(node1, c1.ContractBond / 5);
                                 }
                             }
                         }

@@ -98,6 +98,11 @@ namespace RouteCoinCharts
             seller.RouteCoins = seller.RouteCoins - routeFoundBond;
             RouteFoundBond = routeFoundBond;
             Status = ContractStatus.RouteFound;
+
+            // ignoring routeconfirm for now. paying the money when route found
+            Seller.RouteCoins += ContractBond;
+            Seller.RouteCoins += RouteFoundBond;
+
             return this;
         }
 

@@ -48,7 +48,7 @@ namespace RouteCoinCharts
         public Node Seller { get; set; }
         public int ContractBond { get; set; }
         public int RouteFoundBond { get; set; }
-        public Contract ParentContract { get; set; }
+        public List<Contract> ParentContracts { get; set; }
         public string CreatedDate { get; set; }
         public int ExpiresInMinutes { get; set; }
         public int HubCount { get; set; }
@@ -77,7 +77,11 @@ namespace RouteCoinCharts
             else
                 HubCount = parentContract.HubCount + 1;
 
-            ParentContract = parentContract;
+            if (parentContract != null)
+                ParentContracts.Add(parentContract);
+            else
+                ParentContracts = new List<Contract>();
+
             return this;
         }
 

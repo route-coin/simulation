@@ -64,66 +64,76 @@ namespace RouteCoinCharts
                 {
                     if (!IsCloseToBs(node1, now))
                     {
+                        if (contract.Status == Contract.ContractStatus.Created)
+                        {
                             var c1 = new Contract();
                             c1 = c1.CreateContract(contract.ContractBond / 2, node1, 100, contract);
                             if (c1 == null)
-                            continue;
+                                continue;
 
-                        now = now.AddSeconds(rnd.Next(12, 16));
+                            now = now.AddSeconds(rnd.Next(12, 16));
 
-                        var closeNodes1 = GetNeighbors(topologies, node1, now);
+                            var closeNodes1 = GetNeighbors(topologies, node1, now);
 
-                        foreach (Node node2 in closeNodes1)
-                        {
-                            if (!IsCloseToBs(node2, now))
+                            foreach (Node node2 in closeNodes1)
                             {
-                                var c2 = new Contract();
-                                c2 = c2.CreateContract(contract.ContractBond / 2, node2, 100, contract);
-                                if (c2 == null)
-                                    continue;
-
-                                now = now.AddSeconds(rnd.Next(12, 16));
-
-                                var closeNodes2 = GetNeighbors(topologies, node2, now);
-
-                                foreach (Node node3 in closeNodes2)
+                                if (!IsCloseToBs(node2, now))
                                 {
-                                    if (!IsCloseToBs(node3, now))
+                                    var c2 = new Contract();
+                                    c2 = c2.CreateContract(contract.ContractBond / 2, node2, 100, contract);
+                                    if (c2 == null)
+                                        continue;
+
+                                    now = now.AddSeconds(rnd.Next(12, 16));
+
+                                    var closeNodes2 = GetNeighbors(topologies, node2, now);
+
+                                    foreach (Node node3 in closeNodes2)
                                     {
-                                        var c3 = new Contract();
-                                        c3 = c3.CreateContract(c2.ContractBond / 2, node3, 100, c2);
-                                        if (c3 == null)
-                                            continue;
-
-                                        now = now.AddSeconds(rnd.Next(12, 16));
-
-                                        var closeNodes3 = GetNeighbors(topologies, node3, now);
-
-                                        foreach (Node node4 in closeNodes3)
+                                        if (!IsCloseToBs(node3, now))
                                         {
-                                            if (!IsCloseToBs(node4, now))
+                                            var c3 = new Contract();
+                                            c3 = c3.CreateContract(c2.ContractBond / 2, node3, 100, c2);
+                                            if (c3 == null)
+                                                continue;
+
+                                            now = now.AddSeconds(rnd.Next(12, 16));
+
+                                            var closeNodes3 = GetNeighbors(topologies, node3, now);
+
+                                            foreach (Node node4 in closeNodes3)
                                             {
-                                                var c4 = new Contract();
-                                                c4 = c4.CreateContract(c3.ContractBond / 2, node4, 100, c3);
-                                                if (c3 == null)
-                                                    continue;
-                                            }
-                                            else
-                                            {
-                                                c3.RouteFound(node4, c3.ContractBond / 5);
-                                                //var parent = c3.ParentContract;
-                                                //while (parent != null)
-                                                //{
-                                                //    parent.RouteFound()
-                                                //}
+                                                if (!IsCloseToBs(node4, now))
+                                                {
+                                                    var c4 = new Contract();
+                                                    c4 = c4.CreateContract(c3.ContractBond / 2, node4, 100, c3);
+                                                    if (c3 == null)
+                                                        continue;
+                                                }
+                                                else
+                                                {
+                                                    c3.RouteFound(node4, c3.ContractBond / 5);
+                                                    //var parent = c3.ParentContract;
+                                                    //while (parent != null)
+                                                    //{
+                                                    //    parent.RouteFound()
+                                                    //}
+                                                }
                                             }
 
                                         }
-
                                     }
-                                }
 
+                                }
                             }
+                        }
+                    }
+                    else
+                    {
+                        if (contract.Status == Contract.ContractStatus.Created)
+                        {
+                            now = now.AddSeconds(rnd.Next(12, 16));
+                            contract.RouteFound(node1, contract.ContractBond / 5);
                         }
                     }
 

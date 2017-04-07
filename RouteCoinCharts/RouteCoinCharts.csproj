@@ -49,5 +49,11 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DatabaseRepository\DatabaseRepository.csproj">
+      <Project>{0f1ff864-dc9b-456f-b8ff-ab4fe4bc93cc}</Project>
+      <Name>DatabaseRepository</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

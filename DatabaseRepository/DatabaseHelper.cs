@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.Data.Entity.SqlServer;
 using System.Linq;
+using System.Threading;
 
 namespace DatabaseRepository
 {
     public class DatabaseHelper
     {
+        private static Random rnd = new Random();
         public static Node DedicateNode()
         {
             var dbContext = new RouteCoinEntities();
@@ -122,7 +124,53 @@ namespace DatabaseRepository
 
             dbContext.SaveChanges();
 
+            Thread.Sleep(rnd.Next(5, 10));
+
             return contractAddress;
         }
+
+        public static string GetSeller(string contractAddress)
+        {
+            var dbContext = new RouteCoinEntities();
+            var contract = dbContext.Contracts.FirstOrDefault(m => m.ContractAddress == contractAddress);
+            return contract.SellerAddress;
+        }
+
+        public static string GetBuyer(string contractAddress)
+        {
+            var dbContext = new RouteCoinEntities();
+            var contract = dbContext.Contracts.FirstOrDefault(m => m.ContractAddress == contractAddress);
+            return contract.BuyerAddress;
+        }
+
+
+        public static int? GetBalance(string contractAddress)
+        {
+            var dbContext = new RouteCoinEntities();
+            var contract = dbContext.Contracts.FirstOrDefault(m => m.ContractAddress == contractAddress);
+            return contract.ContractBalance;
+        }
+
+        public static string GetStatus(string contractAddress)
+        {
+            var dbContext = new RouteCoinEntities();
+            var contract = dbContext.Contracts.FirstOrDefault(m => m.ContractAddress == contractAddress);
+            return contract.ContractStatus;
+        }
+
+        public static string GetParentContract(string contractAddress)
+        {
+            var dbContext = new RouteCoinEntities();
+            var contract = dbContext.Contracts.FirstOrDefault(m => m.ContractAddress == contractAddress);
+            return contract.ParentContractAdress;
+        }
+
+        public static int? GetHupCount(string contractAddress)
+        {
+            var dbContext = new RouteCoinEntities();
+            var contract = dbContext.Contracts.FirstOrDefault(m => m.ContractAddress == contractAddress);
+            return contract.HupCount;
+        }
+
     }
 }

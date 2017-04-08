@@ -116,44 +116,48 @@ namespace EthereumRepository
 
         public string GetBuyer(string nodePublicKey, string nodePassword, string contractAddress)
         {
-            string result = string.Empty;
-            Task.Run(async () =>
-            {
-                await UnlockAccount(nodePublicKey, nodePassword);
-                var ipcClient = new IpcClient(_getAddress);
-                var web3 = new Web3(ipcClient);
+            return DatabaseHelper.GetBuyer(contractAddress);
 
-                var contract = web3.Eth.GetContract(_abi, contractAddress);
-                var getBalanceFunction = contract.GetFunction("getBuyer");
+            //string result = string.Empty;
+            //Task.Run(async () =>
+            //{
+            //    await UnlockAccount(nodePublicKey, nodePassword);
+            //    var ipcClient = new IpcClient(_getAddress);
+            //    var web3 = new Web3(ipcClient);
 
-                result = await getBalanceFunction.CallAsync<string>();
+            //    var contract = web3.Eth.GetContract(_abi, contractAddress);
+            //    var getBalanceFunction = contract.GetFunction("getBuyer");
 
-                return result;
+            //    result = await getBalanceFunction.CallAsync<string>();
 
-            }).GetAwaiter().GetResult();
+            //    return result;
 
-            return result;
+            //}).GetAwaiter().GetResult();
+
+            //return result;
         }
 
         public string GetSeller(string nodePublicKey, string nodePassword, string contractAddress)
         {
-            string result = string.Empty;
-            Task.Run(async () =>
-            {
-                await UnlockAccount(nodePublicKey, nodePassword);
-                var ipcClient = new IpcClient(_getAddress);
-                var web3 = new Web3(ipcClient);
+            return DatabaseHelper.GetBuyer(contractAddress);
 
-                var contract = web3.Eth.GetContract(_abi, contractAddress);
-                var getBalanceFunction = contract.GetFunction("getSeller");
+            //string result = string.Empty;
+            //Task.Run(async () =>
+            //{
+            //    await UnlockAccount(nodePublicKey, nodePassword);
+            //    var ipcClient = new IpcClient(_getAddress);
+            //    var web3 = new Web3(ipcClient);
 
-                result = await getBalanceFunction.CallAsync<string>();
+            //    var contract = web3.Eth.GetContract(_abi, contractAddress);
+            //    var getBalanceFunction = contract.GetFunction("getSeller");
 
-                return result;
+            //    result = await getBalanceFunction.CallAsync<string>();
 
-            }).GetAwaiter().GetResult();
+            //    return result;
 
-            return result;
+            //}).GetAwaiter().GetResult();
+
+            //return result;
         }
 
         public string RouteFound(string nodePublicKey, string nodePassword, string contractAddress, string callerAddress, string parentContract)
@@ -237,86 +241,94 @@ namespace EthereumRepository
 
         public Int64 GetBalance(string nodePublicKey, string nodePassword, string contractAddress)
         {
-            Int64 result = 0;
-            Task.Run(async () =>
-            {
-                await UnlockAccount(nodePublicKey, nodePassword);
+            return (Int64)DatabaseHelper.GetBalance(contractAddress);
 
-                var ipcClient = new IpcClient(_getAddress);
-                var web3 = new Web3(ipcClient);
+            //Int64 result = 0;
+            //Task.Run(async () =>
+            //{
+            //    await UnlockAccount(nodePublicKey, nodePassword);
 
-                var contract = web3.Eth.GetContract(_abi, contractAddress);
-                var getBalanceFunction = contract.GetFunction("getBalance");
+            //    var ipcClient = new IpcClient(_getAddress);
+            //    var web3 = new Web3(ipcClient);
 
-                result = await getBalanceFunction.CallAsync<Int64>();
-                return result;
+            //    var contract = web3.Eth.GetContract(_abi, contractAddress);
+            //    var getBalanceFunction = contract.GetFunction("getBalance");
 
-            }).GetAwaiter().GetResult();
+            //    result = await getBalanceFunction.CallAsync<Int64>();
+            //    return result;
 
-            return result;
+            //}).GetAwaiter().GetResult();
+
+            //return result;
         }
 
         public string GetParentContract(string nodePublicKey, string nodePassword, string contractAddress)
         {
-            string result = string.Empty;
-            Task.Run(async () =>
-            {
-                await UnlockAccount(nodePublicKey, nodePassword);
-                var ipcClient = new IpcClient(_getAddress);
-                var web3 = new Web3(ipcClient);
+            return DatabaseHelper.GetParentContract(contractAddress);
 
-                var contract = web3.Eth.GetContract(_abi, contractAddress);
-                var getBalanceFunction = contract.GetFunction("getParentContract");
+            //string result = string.Empty;
+            //Task.Run(async () =>
+            //{
+            //    await UnlockAccount(nodePublicKey, nodePassword);
+            //    var ipcClient = new IpcClient(_getAddress);
+            //    var web3 = new Web3(ipcClient);
 
-                result = await getBalanceFunction.CallAsync<string>();
+            //    var contract = web3.Eth.GetContract(_abi, contractAddress);
+            //    var getBalanceFunction = contract.GetFunction("getParentContract");
 
-                return result;
+            //    result = await getBalanceFunction.CallAsync<string>();
 
-            }).GetAwaiter().GetResult();
+            //    return result;
 
-            return result;
+            //}).GetAwaiter().GetResult();
+
+            //return result;
         }
 
-        public BigInteger GetState(string publicKey, string password, string contractAddress)
+        public string GetState(string publicKey, string password, string contractAddress)
         {
-            BigInteger result = 0;
-            Task.Run(async () =>
-            {
-                await UnlockAccount(publicKey, password);
-                var ipcClient = new IpcClient(_getAddress);
-                var web3 = new Web3(ipcClient);
+            return DatabaseHelper.GetStatus(contractAddress);
 
-                var contract = web3.Eth.GetContract(_abi, contractAddress);
-                var getBalanceFunction = contract.GetFunction("getState");
+            //BigInteger result = 0;
+            //Task.Run(async () =>
+            //{
+            //    await UnlockAccount(publicKey, password);
+            //    var ipcClient = new IpcClient(_getAddress);
+            //    var web3 = new Web3(ipcClient);
 
-                result = await getBalanceFunction.CallAsync<BigInteger>();
+            //    var contract = web3.Eth.GetContract(_abi, contractAddress);
+            //    var getBalanceFunction = contract.GetFunction("getState");
 
-                return result;
+            //    result = await getBalanceFunction.CallAsync<BigInteger>();
 
-            }).GetAwaiter().GetResult();
+            //    return result;
 
-            return result;
+            //}).GetAwaiter().GetResult();
+
+            //return result;
         }
 
-        public BigInteger GetHupCount(string publicKey, string password, string contractAddress)
+        public int? GetHupCount(string publicKey, string password, string contractAddress)
         {
-            BigInteger result = 0;
-            Task.Run(async () =>
-            {
-                await UnlockAccount(publicKey, password);
-                var ipcClient = new IpcClient(_getAddress);
-                var web3 = new Web3(ipcClient);
+            return DatabaseHelper.GetHupCount(contractAddress);
 
-                var contract = web3.Eth.GetContract(_abi, contractAddress);
-                var getBalanceFunction = contract.GetFunction("getHupCount");
+            //BigInteger result = 0;
+            //Task.Run(async () =>
+            //{
+            //    await UnlockAccount(publicKey, password);
+            //    var ipcClient = new IpcClient(_getAddress);
+            //    var web3 = new Web3(ipcClient);
 
-                result = await getBalanceFunction.CallAsync<BigInteger>();
+            //    var contract = web3.Eth.GetContract(_abi, contractAddress);
+            //    var getBalanceFunction = contract.GetFunction("getHupCount");
 
-                return result;
+            //    result = await getBalanceFunction.CallAsync<BigInteger>();
 
-            }).GetAwaiter().GetResult();
+            //    return result;
 
-            return result;
+            //}).GetAwaiter().GetResult();
+
+            //return result;
         }
 
     }

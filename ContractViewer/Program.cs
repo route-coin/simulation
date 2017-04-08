@@ -31,7 +31,7 @@ namespace ContractViewer
                 Console.WriteLine($"Balance: {contractHelper.GetBalance(publicKey, password, contractAddress)}");
                 Console.WriteLine($"Buyer: {contractHelper.GetBuyer(publicKey, password, contractAddress)}");
                 Console.WriteLine($"Seller: {contractHelper.GetSeller(publicKey, password, contractAddress)}");
-                Console.WriteLine($"State: {((WhisperMessage.ContractSolidityState) int.Parse(contractHelper.GetState(publicKey, password, contractAddress).ToString())).ToString()}");
+                Console.WriteLine($"State: {contractHelper.GetState(publicKey, password, contractAddress)}");
                 Console.WriteLine($"Hup count: {contractHelper.GetHupCount(publicKey, password, contractAddress)}");
 
 

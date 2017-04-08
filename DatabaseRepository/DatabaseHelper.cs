@@ -172,5 +172,54 @@ namespace DatabaseRepository
             return contract.HupCount;
         }
 
+        public static string RouteFound(string nodePublicKey, string contractAddress)
+        {
+            var dbContext = new RouteCoinEntities();
+            var contract = dbContext.Contracts.FirstOrDefault(m => m.ContractAddress == contractAddress);
+
+            var node = dbContext.Nodes.FirstOrDefault(m => m.PublicKey == nodePublicKey);
+            if (node.Balance < contract.ContractBond / 5 || contract.ContractStatus != "Created")
+                return string.Empty;
+
+            contract.SellerAddress = nodePublicKey;
+            contract.RouteFoundBond = contract.ContractBond / 5;
+            contract.ContractBalance = contract.ContractBalance + contract.RouteFoundBond;
+            contract.RouteFoundDateTime = DateTime.Now;
+            contract.ContractStatus = "RouteFound";
+
+            node.Balance = node.Balance - (contract.ContractBond / 5);
+
+            dbContext.SaveChanges();
+
+            Thread.Sleep(rnd.Next(3, 7));
+
+            return nodePublicKey;
+
+        }
+
+        public static string RouteConfirmed(string nodePublicKey, string contractAddress)
+        {
+            var dbContext = new RouteCoinEntities();
+            var contract = dbContext.Contracts.FirstOrDefault(m => m.ContractAddress == contractAddress);
+
+            if (contract.ContractStatus != "RouteFound")
+                return string.Empty;
+
+            var buyerNode = dbContext.Nodes.FirstOrDefault(m => m.PublicKey == contract.BuyerAddress);
+            var sellerNode = dbContext.Nodes.FirstOrDefault(m => m.PublicKey == contract.SellerAddress);
+
+            sellerNode.Balance = sellerNode.Balance + contract.ContractBalance;
+            contract.ContractBalance = 0;
+            contract.RouteConfirmDateTime = DateTime.Now;
+            contract.ContractStatus = "RouteConfirmed";
+
+            dbContext.SaveChanges();
+
+            Thread.Sleep(rnd.Next(3, 7));
+
+            return nodePublicKey;
+
+        }
+
     }
 }

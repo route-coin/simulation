@@ -163,80 +163,89 @@ namespace EthereumRepository
         public string RouteFound(string nodePublicKey, string nodePassword, string contractAddress, string callerAddress, string parentContract)
         {
             var result = string.Empty;
-            Task.Run(async () =>
-            {
-
-                await UnlockAccount(nodePublicKey, nodePassword);
-
-                var ipcClient = new IpcClient(_getAddress);
-                var web3 = new Web3(ipcClient);
-
-                var contract = web3.Eth.GetContract(_abi, contractAddress);
-                var destinationAddressRouteFoundFunction = contract.GetFunction("destinationAddressRouteFound");
-
-                var transactionHash = await destinationAddressRouteFoundFunction.SendTransactionAsync(callerAddress);
-                DatabaseHelper.Log(nodePublicKey, $"RouteFound transaction submitted. trx: {transactionHash}");
-                var keepChecking = true;
-                var retry = 0;
-                while (keepChecking)
-                {
-                    var reciept = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
-                    if (reciept != null)
-                    {
-                        DatabaseHelper.Log(nodePublicKey, $"RouteFound submitted. Block number:{reciept.BlockNumber.Value.ToString()}", $"{nodePublicKey},{contractAddress},{parentContract},RouteFound,{reciept.CumulativeGasUsed.Value.ToString()},{0},{DateTime.UtcNow.ToString("hh:mm:ss")}");
-                        result = reciept.BlockNumber.Value.ToString();
-                        return result;
-                    }
-                    // Transacion not submitted. wait 3 seconds and check again
-                    System.Threading.Thread.Sleep(_sleepBetweenRetry);
-                    retry++;
-                    if (retry > _maxRetry)
-                        keepChecking = false;
-                }
-                return result;
-
-            }).GetAwaiter().GetResult();
-
+            result = DatabaseHelper.RouteFound(nodePublicKey, contractAddress);
+            DatabaseHelper.Log(nodePublicKey, $"RouteFound submitted. Block number:{0}", $"{nodePublicKey},{contractAddress},{parentContract},RouteFound,{0},{0},{DateTime.UtcNow.ToString("hh:mm:ss")}");
             return result;
+            //Task.Run(async () =>
+            //{
+
+            //    await UnlockAccount(nodePublicKey, nodePassword);
+
+            //    var ipcClient = new IpcClient(_getAddress);
+            //    var web3 = new Web3(ipcClient);
+
+            //    var contract = web3.Eth.GetContract(_abi, contractAddress);
+            //    var destinationAddressRouteFoundFunction = contract.GetFunction("destinationAddressRouteFound");
+
+            //    var transactionHash = await destinationAddressRouteFoundFunction.SendTransactionAsync(callerAddress);
+            //    DatabaseHelper.Log(nodePublicKey, $"RouteFound transaction submitted. trx: {transactionHash}");
+            //    var keepChecking = true;
+            //    var retry = 0;
+            //    while (keepChecking)
+            //    {
+            //        var reciept = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
+            //        if (reciept != null)
+            //        {
+            //            DatabaseHelper.Log(nodePublicKey, $"RouteFound submitted. Block number:{reciept.BlockNumber.Value.ToString()}", $"{nodePublicKey},{contractAddress},{parentContract},RouteFound,{reciept.CumulativeGasUsed.Value.ToString()},{0},{DateTime.UtcNow.ToString("hh:mm:ss")}");
+            //            result = reciept.BlockNumber.Value.ToString();
+            //            return result;
+            //        }
+            //        // Transacion not submitted. wait 3 seconds and check again
+            //        System.Threading.Thread.Sleep(_sleepBetweenRetry);
+            //        retry++;
+            //        if (retry > _maxRetry)
+            //            keepChecking = false;
+            //    }
+            //    return result;
+
+            //}).GetAwaiter().GetResult();
+
+            //return result;
         }
 
         public string RouteConfirmed(string nodePublicKey, string nodePassword, string contractAddress, string callerAddress, string parentContract)
         {
             var result = string.Empty;
-            Task.Run(async () =>
-            {
-                await UnlockAccount(nodePublicKey, nodePassword);
 
-                var ipcClient = new IpcClient(_getAddress);
-                var web3 = new Web3(ipcClient);
-
-                var contract = web3.Eth.GetContract(_abi, contractAddress);
-                var destinationAddressRouteFoundFunction = contract.GetFunction("destinationAddressRouteConfirmed");
-
-                var transactionHash = await destinationAddressRouteFoundFunction.SendTransactionAsync(callerAddress);
-
-                DatabaseHelper.Log(nodePublicKey, $"RouteConfirm transaction submitted. trx: {transactionHash}");
-                var keepChecking = true;
-                var retry = 0;
-                while (keepChecking)
-                {
-                    var reciept = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
-                    if (reciept != null)
-                    {
-                        DatabaseHelper.Log(nodePublicKey, $"RouteConfirm Submitted. Block number:{reciept.BlockNumber.Value.ToString()}", $"{nodePublicKey},{contractAddress},{parentContract},RouteConfirmed,{reciept.CumulativeGasUsed.Value.ToString()},{0},{DateTime.UtcNow.ToString("hh:mm:ss")}");
-                        result = reciept.BlockNumber.Value.ToString();
-                        return result;
-                    }
-                    // Transacion not submitted. wait 3 seconds and check again
-                    System.Threading.Thread.Sleep(_sleepBetweenRetry);
-                    retry++;
-                    if (retry > _maxRetry)
-                        keepChecking = false;
-                }
-                return result;
-            }).GetAwaiter().GetResult();
+            result = DatabaseHelper.RouteConfirmed(nodePublicKey, contractAddress);
+            DatabaseHelper.Log(nodePublicKey, $"RouteConfirm Submitted. Block number:{0}", $"{nodePublicKey},{contractAddress},{parentContract},RouteConfirmed,{0},{0},{DateTime.UtcNow.ToString("hh:mm:ss")}");
 
             return result;
+
+            //Task.Run(async () =>
+            //{
+            //    await UnlockAccount(nodePublicKey, nodePassword);
+
+            //    var ipcClient = new IpcClient(_getAddress);
+            //    var web3 = new Web3(ipcClient);
+
+            //    var contract = web3.Eth.GetContract(_abi, contractAddress);
+            //    var destinationAddressRouteFoundFunction = contract.GetFunction("destinationAddressRouteConfirmed");
+
+            //    var transactionHash = await destinationAddressRouteFoundFunction.SendTransactionAsync(callerAddress);
+
+            //    DatabaseHelper.Log(nodePublicKey, $"RouteConfirm transaction submitted. trx: {transactionHash}");
+            //    var keepChecking = true;
+            //    var retry = 0;
+            //    while (keepChecking)
+            //    {
+            //        var reciept = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
+            //        if (reciept != null)
+            //        {
+            //            DatabaseHelper.Log(nodePublicKey, $"RouteConfirm Submitted. Block number:{reciept.BlockNumber.Value.ToString()}", $"{nodePublicKey},{contractAddress},{parentContract},RouteConfirmed,{reciept.CumulativeGasUsed.Value.ToString()},{0},{DateTime.UtcNow.ToString("hh:mm:ss")}");
+            //            result = reciept.BlockNumber.Value.ToString();
+            //            return result;
+            //        }
+            //        // Transacion not submitted. wait 3 seconds and check again
+            //        System.Threading.Thread.Sleep(_sleepBetweenRetry);
+            //        retry++;
+            //        if (retry > _maxRetry)
+            //            keepChecking = false;
+            //    }
+            //    return result;
+            //}).GetAwaiter().GetResult();
+
+            //return result;
         }
 
         public Int64 GetBalance(string nodePublicKey, string nodePassword, string contractAddress)

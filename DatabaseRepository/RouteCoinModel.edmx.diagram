@@ -6,8 +6,8 @@
     <edmx:Diagrams>
       <Diagram DiagramId="3b989a1709104ffcbff00f1570c6c181" Name="Diagram1">
         <EntityTypeShape EntityType="RouteCoinModel.Contract" Width="1.5" PointX="0.75" PointY="0.75" />
-        <EntityTypeShape EntityType="RouteCoinModel.Log" Width="1.5" PointX="2.75" PointY="0.75" />
         <EntityTypeShape EntityType="RouteCoinModel.Node" Width="1.5" PointX="2.75" PointY="3.75" />
+        <EntityTypeShape EntityType="RouteCoinModel.Log" Width="1.5" PointX="3.375" PointY="0.75" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

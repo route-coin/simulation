@@ -107,6 +107,15 @@ namespace DatabaseRepository
             if (node.Balance < balance)
                 return string.Empty;
 
+            var parent = new Contract();
+            parent.HupCount = 0;
+            if (!string.IsNullOrEmpty(parentContract))
+            {
+                parent = dbContext.Contracts.FirstOrDefault(m => m.ContractAddress == parentContract);
+                if(parent.HupCount >=3)
+                    return string.Empty;
+            }
+
             var contractAddress = Guid.NewGuid().ToString();
             dbContext.Contracts.Add(new Contract()
             {
@@ -116,11 +125,12 @@ namespace DatabaseRepository
                 ContractBond = (int?)balance,
                 ContractStatus = "Created",
                 CreatedDateTime = DateTime.Now,
-                HupCount = 1,
+                HupCount = parent.HupCount,
                 ExpiresInMinutes = contractGracePeriod,
+                ParentContractAdress = parentContract,
             });
 
-            node.Balance = node.Balance = (int?)balance;
+            node.Balance = node.Balance - (int?)balance;
 
             dbContext.SaveChanges();
 

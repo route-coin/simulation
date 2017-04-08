@@ -29,9 +29,9 @@
             <PropertyRef Name="Id" />
           </Key>
           <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="NodePublicKey" Type="nvarchar" MaxLength="100" />
-          <Property Name="Message" Type="nvarchar" MaxLength="100" />
-          <Property Name="Event" Type="nvarchar" MaxLength="50" />
+          <Property Name="NodePublicKey" Type="nvarchar(max)" />
+          <Property Name="Message" Type="nvarchar(max)" />
+          <Property Name="Event" Type="nvarchar(max)" />
           <Property Name="CreatedDate" Type="datetime" />
         </EntityType>
         <EntityType Name="Nodes">
@@ -59,8 +59,8 @@
       <Schema Namespace="RouteCoinModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
         <EntityContainer Name="RouteCoinEntities" annotation:LazyLoadingEnabled="true">
           <EntitySet Name="Contracts" EntityType="RouteCoinModel.Contract" />
-          <EntitySet Name="Logs" EntityType="RouteCoinModel.Log" />
           <EntitySet Name="Nodes" EntityType="RouteCoinModel.Node" />
+          <EntitySet Name="Logs" EntityType="RouteCoinModel.Log" />
         </EntityContainer>
         <EntityType Name="Contract">
           <Key>
@@ -81,16 +81,6 @@
           <Property Name="RouteConfirmDateTime" Type="DateTime" Precision="3" />
           <Property Name="ExpiresInMinutes" Type="Int32" />
         </EntityType>
-        <EntityType Name="Log">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="NodePublicKey" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="Message" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Name="Event" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
-          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
-        </EntityType>
         <EntityType Name="Node">
           <Key>
             <PropertyRef Name="NodeId" />
@@ -104,6 +94,16 @@
           <Property Name="Balance" Type="Int32" />
           <Property Name="Password" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
           <Property Name="IsRunning" Type="Boolean" />
+        </EntityType>
+        <EntityType Name="Log">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="NodePublicKey" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Message" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="Event" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
         </EntityType>
       </Schema>
     </edmx:ConceptualModels>
@@ -131,17 +131,6 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <EntitySetMapping Name="Logs">
-            <EntityTypeMapping TypeName="RouteCoinModel.Log">
-              <MappingFragment StoreEntitySet="Logs">
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="Event" ColumnName="Event" />
-                <ScalarProperty Name="Message" ColumnName="Message" />
-                <ScalarProperty Name="NodePublicKey" ColumnName="NodePublicKey" />
-                <ScalarProperty Name="Id" ColumnName="Id" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
           <EntitySetMapping Name="Nodes">
             <EntityTypeMapping TypeName="RouteCoinModel.Node">
               <MappingFragment StoreEntitySet="Nodes">
@@ -154,6 +143,17 @@
                 <ScalarProperty Name="PositionX" ColumnName="PositionX" />
                 <ScalarProperty Name="PublicKey" ColumnName="PublicKey" />
                 <ScalarProperty Name="NodeId" ColumnName="NodeId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Logs">
+            <EntityTypeMapping TypeName="RouteCoinModel.Log">
+              <MappingFragment StoreEntitySet="Logs">
+                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="Event" ColumnName="Event" />
+                <ScalarProperty Name="Message" ColumnName="Message" />
+                <ScalarProperty Name="NodePublicKey" ColumnName="NodePublicKey" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

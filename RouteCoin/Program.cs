@@ -78,7 +78,7 @@ namespace RouteCoin
         {
             var body = message.GetBody<WhisperMessage>();
             var contractHelper = new ContractHelper();
-            var balance = 1;
+            var balance = 10;
             var contractAddress = string.Empty;
             var parent = string.Empty;
             var buyer = string.Empty;
@@ -91,8 +91,8 @@ namespace RouteCoin
                     if (!IsBaseStationClose())
                     {
                         // initial contract, so all parent contract addresses will be 0x
-                        var parentContract = "0x0";
-                        contractAddress = contractHelper.CreateContract(node.PublicKey, node.Password, balance, baseStationNode.PublicKey, ContractGracePeriod, parentContract);
+                        //var parentContract;
+                        contractAddress = contractHelper.CreateContract(node.PublicKey, node.Password, balance, baseStationNode.PublicKey, ContractGracePeriod, null);
                         SaveContractLocally(contractAddress, string.Empty);
                         SendContractCreatedMessageToNeighborNodes(contractAddress, string.Empty);
                     }
@@ -142,7 +142,7 @@ namespace RouteCoin
 
                 case WhisperMessage.State.RouteFound:
                     parent = contractHelper.GetParentContract(node.PublicKey, node.Password, body.ContractAddress);
-                    if (parent != "0x0000000000000000000000000000000000000000" && parent != string.Empty && parent != "0x" && parent != "0x0")
+                    if (!string.IsNullOrEmpty(parent))
                     {
                         var parentsParent = contractHelper.GetParentContract(node.PublicKey, node.Password, parent);
                         var routeFoundSubmitted = contractHelper.RouteFound(node.PublicKey, node.Password, parent, node.PublicKey, parentsParent);

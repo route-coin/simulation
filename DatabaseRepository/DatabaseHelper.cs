@@ -97,5 +97,10 @@ namespace DatabaseRepository
 
             }
         }
+
+        public static string CreateContract(string nodePublicKey, Int64 balance, string destinationAddress, int contractGracePeriod, string parentContract)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

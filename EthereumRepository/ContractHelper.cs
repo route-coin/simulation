@@ -34,46 +34,48 @@ namespace EthereumRepository
             return unlockResult;
         } 
 
-        public string CreateContract(string nodePublicKey, string nodePassword, HexBigInteger balance, string destinationAddress, int contractGracePeriod, string parentContract)
+        public string CreateContract(string nodePublicKey, string nodePassword, Int64 balance, string destinationAddress, int contractGracePeriod, string parentContract)
         {
             var contractAddress = string.Empty;
             // create a contract
-            Task.Run(async () =>
+            Task.Run(() =>
             {
                 try
                 {
 
-                    await UnlockAccount(nodePublicKey, nodePassword);
+                    contractAddress = DatabaseHelper.CreateContract(nodePublicKey, balance, destinationAddress, contractGracePeriod, parentContract);
 
-                    var ipcClient = new IpcClient(_getAddress);
-                    var web3 = new Web3(ipcClient);
-                    var transactionHash = await web3.Eth.DeployContract.SendRequestAsync(_abi, _byteCode, nodePublicKey, new HexBigInteger(900000), balance, new object[] { destinationAddress, contractGracePeriod, parentContract });
-                    DatabaseHelper.Log(nodePublicKey, $"Contract transaction submitted. trx:{transactionHash}");
-                    var keepChecking = true;
-                    var retry = 0;
-                    while (keepChecking)
-                    {
-                        var reciept = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
-                        if (reciept != null)
-                        {
+                    //await UnlockAccount(nodePublicKey, nodePassword);
 
-                            DatabaseHelper.Log(nodePublicKey, $"Contract submitted. Contract PublicKey:{reciept.ContractAddress}", $"{nodePublicKey},{reciept.ContractAddress},{parentContract},ContractCreated,{reciept.CumulativeGasUsed.Value.ToString()},{balance.Value.ToString()},{DateTime.UtcNow.ToString("hh:mm:ss")}");
-                            contractAddress = reciept.ContractAddress;
-                            return contractAddress;
-                        }
-                        // Transacion not submitted. wait 3 seconds and check again
-                        System.Threading.Thread.Sleep(_sleepBetweenRetry);
-                        retry++;
-                        if (retry > _maxRetry)
-                            keepChecking = false;
-                    }
+                    //var ipcClient = new IpcClient(_getAddress);
+                    //var web3 = new Web3(ipcClient);
+                    //var transactionHash = await web3.Eth.DeployContract.SendRequestAsync(_abi, _byteCode, nodePublicKey, new HexBigInteger(900000), balance, new object[] { destinationAddress, contractGracePeriod, parentContract });
+                    //DatabaseHelper.Log(nodePublicKey, $"Contract transaction submitted. trx:{transactionHash}");
+                    //var keepChecking = true;
+                    //var retry = 0;
+                    //while (keepChecking)
+                    //{
+                    //    var reciept = await web3.Eth.Transactions.GetTransactionReceipt.SendRequestAsync(transactionHash);
+                    //    if (reciept != null)
+                    //    {
+
+                    //        DatabaseHelper.Log(nodePublicKey, $"Contract submitted. Contract PublicKey:{reciept.ContractAddress}", $"{nodePublicKey},{reciept.ContractAddress},{parentContract},ContractCreated,{reciept.CumulativeGasUsed.Value.ToString()},{balance.Value.ToString()},{DateTime.UtcNow.ToString("hh:mm:ss")}");
+                    //        contractAddress = reciept.ContractAddress;
+                    //        return contractAddress;
+                    //    }
+                    //    // Transacion not submitted. wait 3 seconds and check again
+                    //    System.Threading.Thread.Sleep(_sleepBetweenRetry);
+                    //    retry++;
+                    //    if (retry > _maxRetry)
+                    //        keepChecking = false;
+                    //}
                     return contractAddress;
-               }
-               catch (Exception ex)
-               {
+                }
+                catch (Exception ex)
+                {
                     DatabaseHelper.Log(nodePublicKey, $"Error: {ex.Message}");
                     return contractAddress;
-               }
+                }
             }).GetAwaiter().GetResult();
 
             return contractAddress;
@@ -233,9 +235,9 @@ namespace EthereumRepository
             return result;
         }
 
-        public BigInteger GetBalance(string nodePublicKey, string nodePassword, string contractAddress)
+        public Int64 GetBalance(string nodePublicKey, string nodePassword, string contractAddress)
         {
-            var result = new BigInteger(0);
+            Int64 result = 0;
             Task.Run(async () =>
             {
                 await UnlockAccount(nodePublicKey, nodePassword);
@@ -246,7 +248,7 @@ namespace EthereumRepository
                 var contract = web3.Eth.GetContract(_abi, contractAddress);
                 var getBalanceFunction = contract.GetFunction("getBalance");
 
-                result = await getBalanceFunction.CallAsync<BigInteger>();
+                result = await getBalanceFunction.CallAsync<Int64>();
                 return result;
 
             }).GetAwaiter().GetResult();

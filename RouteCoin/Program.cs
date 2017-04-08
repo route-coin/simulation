@@ -78,7 +78,7 @@ namespace RouteCoin
         {
             var body = message.GetBody<WhisperMessage>();
             var contractHelper = new ContractHelper();
-            var balance = new HexBigInteger(100000);
+            var balance = 1;
             var contractAddress = string.Empty;
             var parent = string.Empty;
             var buyer = string.Empty;
@@ -112,7 +112,7 @@ namespace RouteCoin
                         var parentContractBalance = contractHelper.GetBalance(node.PublicKey, node.Password, body.ContractAddress);
                         //if (!AlreadyInvolvedInThisContractChain(body.ContractAddress, parent))
                         //{
-                            contractAddress = contractHelper.CreateContract(node.PublicKey, node.Password, new HexBigInteger(parentContractBalance/2), baseStationNode.PublicKey, ContractGracePeriod, body.ContractAddress);
+                            contractAddress = contractHelper.CreateContract(node.PublicKey, node.Password, parentContractBalance/2, baseStationNode.PublicKey, ContractGracePeriod, body.ContractAddress);
                             SaveContractLocally(contractAddress, body.ContractAddress);
                             SendContractCreatedMessageToNeighborNodes(contractAddress, body.FromAddress);
                         //}

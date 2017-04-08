@@ -25,8 +25,8 @@ namespace DatabaseRepository
             throw new UnintentionalCodeFirstException();
         }
     
+        public virtual DbSet<Contract> Contracts { get; set; }
         public virtual DbSet<Log> Logs { get; set; }
         public virtual DbSet<Node> Nodes { get; set; }
-        public virtual DbSet<Whisper> Whispers { get; set; }
     }
 }

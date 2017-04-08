@@ -4,136 +4,156 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="RouteCoinModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="RouteCoinModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Contracts">
+          <Key>
+            <PropertyRef Name="ContractId" />
+          </Key>
+          <Property Name="ContractId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="ContractAddress" Type="nvarchar" MaxLength="100" />
+          <Property Name="ParentContractAdress" Type="nvarchar" MaxLength="100" />
+          <Property Name="HupCount" Type="int" />
+          <Property Name="ContractBalance" Type="int" />
+          <Property Name="ContractBond" Type="int" />
+          <Property Name="RouteFoundBond" Type="int" />
+          <Property Name="BuyerAddress" Type="nvarchar" MaxLength="100" />
+          <Property Name="SellerAddress" Type="nvarchar" MaxLength="100" />
+          <Property Name="ContractStatus" Type="nvarchar" MaxLength="50" />
+          <Property Name="CreatedDateTime" Type="datetime" />
+          <Property Name="RouteFoundDateTime" Type="datetime" />
+          <Property Name="RouteConfirmDateTime" Type="datetime" />
+          <Property Name="ExpiresInMinutes" Type="int" />
+        </EntityType>
         <EntityType Name="Logs">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
-          <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="NodePublicKey" Type="nvarchar" MaxLength="500" Nullable="false" />
-          <Property Name="Message" Type="nvarchar(max)" Nullable="false" />
-          <Property Name="Event" Type="nvarchar" MaxLength="500" />
-          <Property Name="CreatedDate" Type="datetime" Nullable="false" />
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="NodePublicKey" Type="nvarchar" MaxLength="100" />
+          <Property Name="Message" Type="nvarchar" MaxLength="100" />
+          <Property Name="Event" Type="nvarchar" MaxLength="50" />
+          <Property Name="CreatedDate" Type="datetime" />
         </EntityType>
-        <EntityType Name="Node">
+        <EntityType Name="Nodes">
           <Key>
             <PropertyRef Name="NodeId" />
           </Key>
           <Property Name="NodeId" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="PublicKey" Type="nvarchar" MaxLength="500" Nullable="false" />
-          <Property Name="Password" Type="nvarchar" MaxLength="500" Nullable="false" />
-          <Property Name="IsRunning" Type="bit" Nullable="false" />
-          <Property Name="PositionX" Type="int" Nullable="false" />
-          <Property Name="PositionY" Type="int" Nullable="false" />
-          <Property Name="IsBaseStation" Type="bit" Nullable="false" />
+          <Property Name="PublicKey" Type="nvarchar" MaxLength="500" />
+          <Property Name="PositionX" Type="int" />
+          <Property Name="PositionY" Type="int" />
+          <Property Name="IsBaseStation" Type="bit" />
           <Property Name="IsActive" Type="bit" />
-        </EntityType>
-        <EntityType Name="Whisper">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="bigint" StoreGeneratedPattern="Identity" Nullable="false" />
-          <Property Name="FromNode" Type="nvarchar" MaxLength="500" />
-          <Property Name="ToNode" Type="nvarchar" MaxLength="500" />
-          <Property Name="ContractAddress" Type="nvarchar" MaxLength="500" />
-          <Property Name="CreatedDate" Type="datetime" />
-          <Property Name="MessageRead" Type="bit" />
-          <Property Name="ReadDate" Type="datetime" />
-          <Property Name="Notes" Type="nvarchar" MaxLength="500" />
+          <Property Name="Balance" Type="int" />
+          <Property Name="Password" Type="nvarchar" MaxLength="500" />
+          <Property Name="IsRunning" Type="bit" />
         </EntityType>
         <EntityContainer Name="RouteCoinModelStoreContainer">
+          <EntitySet Name="Contracts" EntityType="Self.Contracts" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="Logs" EntityType="Self.Logs" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Node" EntityType="Self.Node" Schema="dbo" store:Type="Tables" />
-          <EntitySet Name="Whisper" EntityType="Self.Whisper" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Nodes" EntityType="Self.Nodes" Schema="dbo" store:Type="Tables" />
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="RouteCoinModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityContainer Name="RouteCoinEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Contracts" EntityType="RouteCoinModel.Contract" />
+          <EntitySet Name="Logs" EntityType="RouteCoinModel.Log" />
+          <EntitySet Name="Nodes" EntityType="RouteCoinModel.Node" />
+        </EntityContainer>
+        <EntityType Name="Contract">
+          <Key>
+            <PropertyRef Name="ContractId" />
+          </Key>
+          <Property Name="ContractId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="ContractAddress" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="ParentContractAdress" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="HupCount" Type="Int32" />
+          <Property Name="ContractBalance" Type="Int32" />
+          <Property Name="ContractBond" Type="Int32" />
+          <Property Name="RouteFoundBond" Type="Int32" />
+          <Property Name="BuyerAddress" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="SellerAddress" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="ContractStatus" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDateTime" Type="DateTime" Precision="3" />
+          <Property Name="RouteFoundDateTime" Type="DateTime" Precision="3" />
+          <Property Name="RouteConfirmDateTime" Type="DateTime" Precision="3" />
+          <Property Name="ExpiresInMinutes" Type="Int32" />
+        </EntityType>
         <EntityType Name="Log">
           <Key>
             <PropertyRef Name="Id" />
           </Key>
-          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="NodePublicKey" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Message" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Event" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
-          <Property Name="CreatedDate" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="NodePublicKey" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Message" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="Event" Type="String" MaxLength="50" FixedLength="false" Unicode="true" />
+          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="Node">
           <Key>
             <PropertyRef Name="NodeId" />
           </Key>
           <Property Name="NodeId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="PublicKey" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="Password" Type="String" MaxLength="500" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="IsRunning" Type="Boolean" Nullable="false" />
-          <Property Name="PositionX" Type="Int32" Nullable="false" />
-          <Property Name="PositionY" Type="Int32" Nullable="false" />
-          <Property Name="IsBaseStation" Type="Boolean" Nullable="false" />
+          <Property Name="PublicKey" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="PositionX" Type="Int32" />
+          <Property Name="PositionY" Type="Int32" />
+          <Property Name="IsBaseStation" Type="Boolean" />
           <Property Name="IsActive" Type="Boolean" />
+          <Property Name="Balance" Type="Int32" />
+          <Property Name="Password" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
+          <Property Name="IsRunning" Type="Boolean" />
         </EntityType>
-        <EntityType Name="Whisper">
-          <Key>
-            <PropertyRef Name="Id" />
-          </Key>
-          <Property Name="Id" Type="Int64" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
-          <Property Name="FromNode" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
-          <Property Name="ToNode" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
-          <Property Name="ContractAddress" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
-          <Property Name="CreatedDate" Type="DateTime" Precision="3" />
-          <Property Name="MessageRead" Type="Boolean" />
-          <Property Name="ReadDate" Type="DateTime" Precision="3" />
-          <Property Name="Notes" Type="String" MaxLength="500" FixedLength="false" Unicode="true" />
-        </EntityType>
-        <EntityContainer Name="RouteCoinEntities" annotation:LazyLoadingEnabled="true">
-          <EntitySet Name="Logs" EntityType="Self.Log" />
-          <EntitySet Name="Nodes" EntityType="Self.Node" />
-          <EntitySet Name="Whispers" EntityType="Self.Whisper" />
-        </EntityContainer>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="RouteCoinModelStoreContainer" CdmEntityContainer="RouteCoinEntities">
+          <EntitySetMapping Name="Contracts">
+            <EntityTypeMapping TypeName="RouteCoinModel.Contract">
+              <MappingFragment StoreEntitySet="Contracts">
+                <ScalarProperty Name="ExpiresInMinutes" ColumnName="ExpiresInMinutes" />
+                <ScalarProperty Name="RouteConfirmDateTime" ColumnName="RouteConfirmDateTime" />
+                <ScalarProperty Name="RouteFoundDateTime" ColumnName="RouteFoundDateTime" />
+                <ScalarProperty Name="CreatedDateTime" ColumnName="CreatedDateTime" />
+                <ScalarProperty Name="ContractStatus" ColumnName="ContractStatus" />
+                <ScalarProperty Name="SellerAddress" ColumnName="SellerAddress" />
+                <ScalarProperty Name="BuyerAddress" ColumnName="BuyerAddress" />
+                <ScalarProperty Name="RouteFoundBond" ColumnName="RouteFoundBond" />
+                <ScalarProperty Name="ContractBond" ColumnName="ContractBond" />
+                <ScalarProperty Name="ContractBalance" ColumnName="ContractBalance" />
+                <ScalarProperty Name="HupCount" ColumnName="HupCount" />
+                <ScalarProperty Name="ParentContractAdress" ColumnName="ParentContractAdress" />
+                <ScalarProperty Name="ContractAddress" ColumnName="ContractAddress" />
+                <ScalarProperty Name="ContractId" ColumnName="ContractId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
           <EntitySetMapping Name="Logs">
             <EntityTypeMapping TypeName="RouteCoinModel.Log">
               <MappingFragment StoreEntitySet="Logs">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="NodePublicKey" ColumnName="NodePublicKey" />
-                <ScalarProperty Name="Message" ColumnName="Message" />
-                <ScalarProperty Name="Event" ColumnName="Event" />
                 <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
+                <ScalarProperty Name="Event" ColumnName="Event" />
+                <ScalarProperty Name="Message" ColumnName="Message" />
+                <ScalarProperty Name="NodePublicKey" ColumnName="NodePublicKey" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Nodes">
             <EntityTypeMapping TypeName="RouteCoinModel.Node">
-              <MappingFragment StoreEntitySet="Node">
-                <ScalarProperty Name="NodeId" ColumnName="NodeId" />
-                <ScalarProperty Name="PublicKey" ColumnName="PublicKey" />
-                <ScalarProperty Name="Password" ColumnName="Password" />
+              <MappingFragment StoreEntitySet="Nodes">
                 <ScalarProperty Name="IsRunning" ColumnName="IsRunning" />
-                <ScalarProperty Name="PositionX" ColumnName="PositionX" />
-                <ScalarProperty Name="PositionY" ColumnName="PositionY" />
-                <ScalarProperty Name="IsBaseStation" ColumnName="IsBaseStation" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="Balance" ColumnName="Balance" />
                 <ScalarProperty Name="IsActive" ColumnName="IsActive" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="Whispers">
-            <EntityTypeMapping TypeName="RouteCoinModel.Whisper">
-              <MappingFragment StoreEntitySet="Whisper">
-                <ScalarProperty Name="Id" ColumnName="Id" />
-                <ScalarProperty Name="FromNode" ColumnName="FromNode" />
-                <ScalarProperty Name="ToNode" ColumnName="ToNode" />
-                <ScalarProperty Name="ContractAddress" ColumnName="ContractAddress" />
-                <ScalarProperty Name="CreatedDate" ColumnName="CreatedDate" />
-                <ScalarProperty Name="MessageRead" ColumnName="MessageRead" />
-                <ScalarProperty Name="ReadDate" ColumnName="ReadDate" />
-                <ScalarProperty Name="Notes" ColumnName="Notes" />
+                <ScalarProperty Name="IsBaseStation" ColumnName="IsBaseStation" />
+                <ScalarProperty Name="PositionY" ColumnName="PositionY" />
+                <ScalarProperty Name="PositionX" ColumnName="PositionX" />
+                <ScalarProperty Name="PublicKey" ColumnName="PublicKey" />
+                <ScalarProperty Name="NodeId" ColumnName="NodeId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

@@ -14,10 +14,10 @@ namespace DatabaseRepository
     
     public partial class Log
     {
-        public long Id { get; set; }
+        public int Id { get; set; }
         public string NodePublicKey { get; set; }
         public string Message { get; set; }
         public string Event { get; set; }
-        public System.DateTime CreatedDate { get; set; }
+        public Nullable<System.DateTime> CreatedDate { get; set; }
     }
 }

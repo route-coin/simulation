@@ -69,7 +69,7 @@ namespace ContractCreator
             // TODO: pick a node that is not close to BS
 
             var baseStationNode = DatabaseHelper.GetBaseStation();
-            var nodes = DatabaseHelper.GetActiveNodes().Where(m=>!m.IsBaseStation).ToList();
+            var nodes = DatabaseHelper.GetActiveNodes().Where(m=>!(bool)m.IsBaseStation).ToList();
             var count = 0;
             for (int i = 0; i < nodes.Count; i++)
             {
@@ -93,7 +93,7 @@ namespace ContractCreator
             // TODO: pick a node that is not close to BS
 
             var baseStationNode = DatabaseHelper.GetBaseStation();
-            var nodes = DatabaseHelper.GetActiveNodes().Where(m => !m.IsBaseStation).ToList();
+            var nodes = DatabaseHelper.GetActiveNodes().Where(m => !(bool)m.IsBaseStation).ToList();
             var node = DatabaseHelper.GetNodeByPublicKey(publicKey);
             if (node != null)
             { 

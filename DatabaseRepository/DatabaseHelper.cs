@@ -21,7 +21,7 @@ namespace DatabaseRepository
                 dbContext.SaveChanges();
             }
 
-            if (node.IsBaseStation)
+            if ((bool)node.IsBaseStation)
                 Console.WriteLine("Node is base station");
             else
                 Console.WriteLine("Regular node");
@@ -68,11 +68,11 @@ namespace DatabaseRepository
             var nodes = dbContext.Nodes.Where(m => m.IsBaseStation == false &&
                                               m.NodeId != node.NodeId &&
                                               m.IsActive == true &&
-                                              SqlFunctions.SquareRoot(Math.Pow(Math.Abs(node.PositionX - m.PositionX), 2) + Math.Pow(Math.Abs(node.PositionY - m.PositionY), 2)) <= coverageArea).ToList();
+                                              SqlFunctions.SquareRoot(Math.Pow(Math.Abs((int)node.PositionX - (int)m.PositionX), 2) + Math.Pow(Math.Abs((int)node.PositionY - (int)m.PositionY), 2)) <= coverageArea).ToList();
 
             return nodes;
         }
-
+        
         public static void Log(string nodeAddress,string message, string eventName = "", bool showInConsole = true)
         {
             var dbContext = new RouteCoinEntities();

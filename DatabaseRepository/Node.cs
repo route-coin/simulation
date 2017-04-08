@@ -16,11 +16,12 @@ namespace DatabaseRepository
     {
         public int NodeId { get; set; }
         public string PublicKey { get; set; }
-        public string Password { get; set; }
-        public bool IsRunning { get; set; }
-        public int PositionX { get; set; }
-        public int PositionY { get; set; }
-        public bool IsBaseStation { get; set; }
+        public Nullable<int> PositionX { get; set; }
+        public Nullable<int> PositionY { get; set; }
+        public Nullable<bool> IsBaseStation { get; set; }
         public Nullable<bool> IsActive { get; set; }
+        public Nullable<int> Balance { get; set; }
+        public string Password { get; set; }
+        public Nullable<bool> IsRunning { get; set; }
     }
 }

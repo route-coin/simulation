@@ -100,7 +100,29 @@ namespace DatabaseRepository
 
         public static string CreateContract(string nodePublicKey, Int64 balance, string destinationAddress, int contractGracePeriod, string parentContract)
         {
-            throw new NotImplementedException();
+            var dbContext = new RouteCoinEntities();
+            var node = dbContext.Nodes.FirstOrDefault(m => m.PublicKey == nodePublicKey);
+            if (node.Balance < balance)
+                return string.Empty;
+
+            var contractAddress = Guid.NewGuid().ToString();
+            dbContext.Contracts.Add(new Contract()
+            {
+                BuyerAddress = nodePublicKey,
+                ContractAddress = contractAddress,
+                ContractBalance = (int?)balance,
+                ContractBond = (int?)balance,
+                ContractStatus = "Created",
+                CreatedDateTime = DateTime.Now,
+                HupCount = 1,
+                ExpiresInMinutes = contractGracePeriod,
+            });
+
+            node.Balance = node.Balance = (int?)balance;
+
+            dbContext.SaveChanges();
+
+            return contractAddress;
         }
     }
 }

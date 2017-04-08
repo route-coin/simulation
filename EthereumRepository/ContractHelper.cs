@@ -44,7 +44,7 @@ namespace EthereumRepository
                 {
 
                     contractAddress = DatabaseHelper.CreateContract(nodePublicKey, balance, destinationAddress, contractGracePeriod, parentContract);
-
+                    DatabaseHelper.Log(nodePublicKey, $"Contract submitted. Contract PublicKey:{contractAddress}", $"{nodePublicKey},{contractAddress},{parentContract},ContractCreated,{0},{balance.ToString()},{DateTime.UtcNow.ToString("hh:mm:ss")}");
                     //await UnlockAccount(nodePublicKey, nodePassword);
 
                     //var ipcClient = new IpcClient(_getAddress);
@@ -298,8 +298,6 @@ namespace EthereumRepository
             return result;
         }
 
-        
-
         public BigInteger GetHupCount(string publicKey, string password, string contractAddress)
         {
             BigInteger result = 0;
@@ -320,7 +318,6 @@ namespace EthereumRepository
 
             return result;
         }
-
 
     }
 }

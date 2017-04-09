@@ -206,8 +206,24 @@ namespace DatabaseRepository
 
             Thread.Sleep(rnd.Next(3000, 7000));
 
-            return nodePublicKey;
+            // TODO: Temporarily brought from RouteConfirmed method:
+            if (contract.ContractStatus != "RouteFound")
+                return string.Empty;
 
+            var buyerNode = dbContext.Nodes.FirstOrDefault(m => m.PublicKey == contract.BuyerAddress);
+            var sellerNode = dbContext.Nodes.FirstOrDefault(m => m.PublicKey == contract.SellerAddress);
+
+            sellerNode.Balance = sellerNode.Balance + contract.ContractBalance;
+            contract.ContractBalance = 0;
+            contract.RouteConfirmDateTime = DateTime.Now;
+            contract.ContractStatus = "RouteConfirmed";
+
+            dbContext.SaveChanges();
+
+            Thread.Sleep(rnd.Next(3000, 7000));
+            // TODO: Temporary
+
+            return nodePublicKey;
         }
 
         public static string RouteConfirmed(string nodePublicKey, string contractAddress)

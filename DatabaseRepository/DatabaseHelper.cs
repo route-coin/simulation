@@ -104,16 +104,19 @@ namespace DatabaseRepository
         {
             var dbContext = new RouteCoinEntities();
             var node = dbContext.Nodes.FirstOrDefault(m => m.PublicKey == nodePublicKey);
-            if (node.Balance < balance)
+            if (node.Balance < balance || balance <= 0)
                 return string.Empty;
 
             var parent = new Contract();
+            var hupCount = 1;
             parent.HupCount = 0;
             if (!string.IsNullOrEmpty(parentContract))
             {
                 parent = dbContext.Contracts.FirstOrDefault(m => m.ContractAddress == parentContract);
-                if(parent.HupCount >=3)
+                if (parent.HupCount >= 3)
                     return string.Empty;
+                else
+                    hupCount = (int)parent.HupCount + 1;
             }
 
             var contractAddress = Guid.NewGuid().ToString();
@@ -125,7 +128,7 @@ namespace DatabaseRepository
                 ContractBond = (int?)balance,
                 ContractStatus = "Created",
                 CreatedDateTime = DateTime.Now,
-                HupCount = parent.HupCount,
+                HupCount = hupCount,
                 ExpiresInMinutes = contractGracePeriod,
                 ParentContractAdress = parentContract,
             });
@@ -134,7 +137,7 @@ namespace DatabaseRepository
 
             dbContext.SaveChanges();
 
-            Thread.Sleep(rnd.Next(5, 10));
+            Thread.Sleep(rnd.Next(5000, 10000));
 
             return contractAddress;
         }
@@ -201,7 +204,7 @@ namespace DatabaseRepository
 
             dbContext.SaveChanges();
 
-            Thread.Sleep(rnd.Next(3, 7));
+            Thread.Sleep(rnd.Next(3000, 7000));
 
             return nodePublicKey;
 
@@ -225,7 +228,7 @@ namespace DatabaseRepository
 
             dbContext.SaveChanges();
 
-            Thread.Sleep(rnd.Next(3, 7));
+            Thread.Sleep(rnd.Next(3000, 7000));
 
             return nodePublicKey;
 

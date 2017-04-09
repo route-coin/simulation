@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace ContractCreator
@@ -73,6 +74,7 @@ namespace ContractCreator
             var count = 0;
             for (int i = 0; i < nodes.Count; i++)
             {
+                Thread.Sleep(1000);
                 var createContract = random.Next(0, 2);
                 if(createContract > 0)
                 { 

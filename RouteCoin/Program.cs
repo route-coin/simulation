@@ -78,7 +78,7 @@ namespace RouteCoin
         {
             var body = message.GetBody<WhisperMessage>();
             var contractHelper = new ContractHelper();
-            var balance = 10;
+            var balance = 100;
             var contractAddress = string.Empty;
             var parent = string.Empty;
             var buyer = string.Empty;
